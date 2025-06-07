@@ -6,8 +6,7 @@ apiKey: "AIzaSyCC36epRow_C0pILQdmHZQxW-Qvtu-1U2k",
   projectId: "ensl-7118d",
   storageBucket: "ensl-7118d.firebasestorage.app",
   messagingSenderId: "830633315062",
-  appId: "1:830633315062:web:7036091381389edf7e7ad7",
-  measurementId: "G-2EL41ZJNFP"
+  appId: "1:830633315062:web:7036091381389edf7e7ad7"
 };
 
 // Initialize Firebase
