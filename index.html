@@ -5,7 +5,6 @@
     <title>نظام إدارة مواضيع التخرج</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Basic RTL styles */
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
@@ -23,7 +22,6 @@
             margin-bottom: 10px;
         }
         
-        /* Login Page */
         .login-container {
             max-width: 400px;
             margin: 100px auto;
@@ -34,10 +32,20 @@
             text-align: center;
         }
         
-        .login-container input {
+        .form-group {
+            margin-bottom: 15px;
+            text-align: right;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input {
             width: 100%;
             padding: 10px;
-            margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 4px;
         }
@@ -52,7 +60,6 @@
             cursor: pointer;
         }
         
-        /* Main Content */
         header {
             background-color: #2c3e50;
             color: white;
@@ -71,7 +78,6 @@
             cursor: pointer;
         }
         
-        /* Year Navigation */
         .year-nav {
             display: flex;
             justify-content: center;
@@ -89,7 +95,10 @@
             cursor: pointer;
         }
         
-        /* Content Tabs */
+        .year-nav button.active {
+            background-color: #2980b9;
+        }
+        
         .content-container {
             padding: 20px;
         }
@@ -113,7 +122,14 @@
             font-weight: bold;
         }
         
-        /* Cards Container */
+        .page-content {
+            display: none;
+        }
+        
+        .page-content.active {
+            display: block;
+        }
+        
         .cards-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -127,7 +143,6 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
-        /* Buttons */
         .primary-btn {
             background-color: #3498db;
             color: white;
@@ -148,7 +163,6 @@
             margin: 5px;
         }
         
-        /* Modal Styles */
         .modal {
             position: fixed;
             top: 0;
@@ -170,57 +184,17 @@
             max-width: 500px;
         }
         
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        
         .form-actions {
             display: flex;
             justify-content: flex-end;
             margin-top: 20px;
         }
         
-        /* Discussants Management */
-        .discussants-management {
-            display: flex;
-            gap: 20px;
+        select[multiple] {
+            height: auto;
+            min-height: 100px;
         }
         
-        .discussants-list-container {
-            flex: 1;
-        }
-        
-        .discussants-controls {
-            flex: 1;
-        }
-        
-        #discussants-list {
-            list-style: none;
-            padding: 0;
-        }
-        
-        #discussants-list li {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        /* Loading Spinner */
         .spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
             border-radius: 50%;
@@ -235,6 +209,34 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .action-btn {
+            padding: 5px 10px;
+            margin: 2px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .accept-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .reject-btn {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .change-profile-btn {
+            background-color: #9b59b6;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -242,7 +244,14 @@
     <div id="login-page" class="login-container">
         <h2>تسجيل الدخول</h2>
         <p id="login-error" class="error-message"></p>
-        <input type="password" id="password" placeholder="أدخل كلمة المرور">
+        <div class="form-group">
+            <label for="email">البريد الإلكتروني:</label>
+            <input type="email" id="email" placeholder="أدخل البريد الإلكتروني">
+        </div>
+        <div class="form-group">
+            <label for="password">كلمة المرور:</label>
+            <input type="password" id="password" placeholder="أدخل كلمة المرور">
+        </div>
         <button id="login-btn">دخول</button>
     </div>
 
@@ -270,20 +279,20 @@
             <div id="loading-spinner" class="spinner hidden"></div>
             
             <!-- Topics Content -->
-            <div id="topics-content" class="page-content">
+            <div id="topics-content" class="page-content active">
                 <div class="topics-header">
                     <button id="new-topic-btn" class="primary-btn">+ موضوع جديد</button>
-                    <button id="download-excel-btn" class="primary-btn">تحميل كملف Excel</button>
+                    <button id="download-excel-btn" class="primary-btn hidden">تحميل كملف Excel</button>
                 </div>
                 <div id="topics-list" class="cards-container"></div>
             </div>
             
             <!-- Committee Content -->
-            <div id="committee-content" class="page-content hidden">
+            <div id="committee-content" class="page-content">
                 <div class="committee-header">
                     <button id="new-committee-btn" class="primary-btn">اختر لجنة مناقشة لمواضيعك</button>
-                    <button id="download-committee-excel-btn" class="primary-btn">تحميل لجان المناقشة</button>
-                    <button id="manage-discussants-btn" class="primary-btn">إدارة المناقشين</button>
+                    <button id="download-committee-excel-btn" class="primary-btn hidden">تحميل لجان المناقشة</button>
+                    <button id="manage-discussants-btn" class="primary-btn hidden">إدارة المناقشين</button>
                 </div>
                 <div id="committee-list" class="cards-container"></div>
             </div>
@@ -331,7 +340,6 @@
                     <label for="committee-topic">الموضوع:</label>
                     <select id="committee-topic" required>
                         <option value="">اختر الموضوع</option>
-                    <!-- Will be populated dynamically -->
                     </select>
                 </div>
                 
@@ -339,7 +347,6 @@
                     <label for="first-discussant">المناقش الأول:</label>
                     <select id="first-discussant" size="5" required>
                         <option value="">اختر المناقش الأول</option>
-                        <!-- Will be populated dynamically -->
                     </select>
                 </div>
 
@@ -347,7 +354,6 @@
                     <label for="second-discussant">المناقش الثاني:</label>
                     <select id="second-discussant" size="5" required>
                         <option value="">اختر المناقش الثاني</option>
-                        <!-- Will be populated dynamically -->
                     </select>
                 </div>
                 
@@ -401,575 +407,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
 
-    <script>
-        // Firebase configuration - REPLACE WITH YOUR ACTUAL CONFIG
-        const firebaseConfig = {
-            apiKey: "AIzaSyCC36epRow_C0pILQdmHZQxW-Qvtu-1U2k",
-            authDomain: "ensl-7118d.firebaseapp.com",
-            databaseURL: "https://ensl-7118d-default-rtdb.firebaseio.com",
-            projectId: "ensl-7118d",
-            storageBucket: "ensl-7118d.firebasestorage.app",
-            messagingSenderId: "830633315062",
-            appId: "1:830633315062:web:7036091381389edf7e7ad7",
-            measurementId: "G-2EL41ZJNFP"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const auth = firebase.auth();
-
-        // DOM Elements
-        const loginPage = document.getElementById('login-page');
-        const mainContent = document.getElementById('main-content');
-        const passwordInput = document.getElementById('password');
-        const loginBtn = document.getElementById('login-btn');
-        const loginError = document.getElementById('login-error');
-        const logoutBtn = document.getElementById('logout-btn');
-        const currentYearDisplay = document.getElementById('current-year');
-        const loadingSpinner = document.getElementById('loading-spinner');
-
-        // State variables
-        let currentYear = new Date().getFullYear();
-        let currentPage = 'topics';
-
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', () => {
-            setupEventListeners();
-            checkAuthState();
-        });
-
-        // Firebase Auth State Listener
-        function checkAuthState() {
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    // User is signed in
-                    loginPage.classList.add('hidden');
-                    mainContent.classList.remove('hidden');
-                    loadInitialData();
-                } else {
-                    // No user is signed in
-                    loginPage.classList.remove('hidden');
-                    mainContent.classList.add('hidden');
-                }
-            });
-        }
-
-        // Event Listeners Setup
-        function setupEventListeners() {
-            // Login
-            loginBtn.addEventListener('click', handleLogin);
-            passwordInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') handleLogin();
-            });
-
-            // Logout
-            logoutBtn.addEventListener('click', () => {
-                auth.signOut();
-            });
-
-            // Year Navigation
-            document.querySelectorAll('.year-nav button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    currentYear = parseInt(btn.dataset.year);
-                    currentYearDisplay.textContent = `نظام إدارة مواضيع التخرج - ${currentYear}`;
-                    loadDataForYear(currentYear);
-                });
-            });
-
-            // Page Tabs
-            document.querySelectorAll('.subpages-tabs button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.subpages-tabs button').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    
-                    currentPage = btn.dataset.page;
-                    document.querySelectorAll('.page-content').forEach(content => {
-                        content.classList.add('hidden');
-                    });
-                    
-                    document.getElementById(`${currentPage}-content`).classList.remove('hidden');
-                });
-            });
-
-            // Topic Modal
-            const topicModal = document.getElementById('topic-modal');
-            const topicForm = document.getElementById('topic-form');
-            document.getElementById('new-topic-btn').addEventListener('click', () => {
-                topicModal.classList.remove('hidden');
-            });
-            
-            document.getElementById('cancel-modal-btn').addEventListener('click', () => {
-                topicModal.classList.add('hidden');
-                topicForm.reset();
-            });
-            
-            topicForm.addEventListener('submit', handleAddTopic);
-
-            // Committee Modal
-            const committeeModal = document.getElementById('committee-modal');
-            const committeeForm = document.getElementById('committee-form');
-            document.getElementById('new-committee-btn').addEventListener('click', () => {
-                populateCommitteeForm();
-                committeeModal.classList.remove('hidden');
-            });
-            
-            document.getElementById('cancel-committee-modal-btn').addEventListener('click', () => {
-                committeeModal.classList.add('hidden');
-                committeeForm.reset();
-            });
-            
-            committeeForm.addEventListener('submit', handleAddCommittee);
-
-            // Discussants Modal
-            const discussantsModal = document.getElementById('discussants-modal');
-            document.getElementById('manage-discussants-btn').addEventListener('click', () => {
-                loadDiscussants();
-                discussantsModal.classList.remove('hidden');
-            });
-            
-            document.getElementById('close-discussants-modal-btn').addEventListener('click', () => {
-                discussantsModal.classList.add('hidden');
-            });
-            
-            document.getElementById('add-discussant-btn').addEventListener('click', handleAddDiscussant);
-            document.getElementById('update-limit-btn').addEventListener('click', handleUpdateDiscussantLimit);
-            
-            // Excel Download Buttons
-            document.getElementById('download-excel-btn').addEventListener('click', downloadTopicsExcel);
-            document.getElementById('download-committee-excel-btn').addEventListener('click', downloadCommitteesExcel);
-        }
-
-        // Authentication Handler
-        async function handleLogin() {
-            const password = passwordInput.value.trim();
-            
-            if (!password) {
-                loginError.textContent = 'الرجاء إدخال كلمة المرور';
-                return;
-            }
-            
-            try {
-                loadingSpinner.classList.remove('hidden');
-                // Using Firebase Authentication (you should set up email/password auth in Firebase Console)
-                await auth.signInWithEmailAndPassword(`admin@example.com`, password);
-                loginError.textContent = '';
-            } catch (error) {
-                console.error('Login error:', error);
-                loginError.textContent = 'كلمة المرور غير صحيحة';
-            } finally {
-                loadingSpinner.classList.add('hidden');
-            }
-        }
-
-        // Data Loading Functions
-        function loadInitialData() {
-            currentYearDisplay.textContent = `نظام إدارة مواضيع التخرج - ${currentYear}`;
-            loadDataForYear(currentYear);
-        }
-
-        function loadDataForYear(year) {
-            loadingSpinner.classList.remove('hidden');
-            
-            // Load topics
-            database.ref(`topics/${year}`).on('value', (snapshot) => {
-                const topics = snapshot.val() || {};
-                renderTopics(topics);
-                
-                // Also update the committee topic dropdown if needed
-                if (currentPage === 'committee') {
-                    populateCommitteeForm();
-                }
-                
-                loadingSpinner.classList.add('hidden');
-            });
-            
-            // Load committees
-            database.ref(`committees/${year}`).on('value', (snapshot) => {
-                const committees = snapshot.val() || {};
-                renderCommittees(committees);
-            });
-            
-            // Load discussants (always needed for committees)
-            database.ref('discussants').on('value', (snapshot) => {
-                const discussants = snapshot.val() || {};
-                window.discussants = discussants; // Store globally for easy access
-                
-                // Update discussant dropdowns if committee modal is open
-                if (!document.getElementById('committee-modal').classList.contains('hidden')) {
-                    populateDiscussantDropdowns(discussants);
-                }
-                
-                // Update discussant management if open
-                if (!document.getElementById('discussants-modal').classList.contains('hidden')) {
-                    renderDiscussantsList(discussants);
-                }
-            });
-        }
-
-        // Rendering Functions
-        function renderTopics(topics) {
-            const topicsList = document.getElementById('topics-list');
-            topicsList.innerHTML = '';
-            
-            Object.entries(topics).forEach(([id, topic]) => {
-                const topicCard = document.createElement('div');
-                topicCard.className = 'card';
-                topicCard.innerHTML = `
-                    <h3>${topic.title}</h3>
-                    <p><strong>المؤطر:</strong> ${topic.supervisor}</p>
-                    <p><strong>الملمح:</strong> ${topic.profile}</p>
-                    <button class="primary-btn" onclick="deleteTopic('${id}')">حذف</button>
-                `;
-                topicsList.appendChild(topicCard);
-            });
-        }
-
-        function renderCommittees(committees) {
-            const committeeList = document.getElementById('committee-list');
-            committeeList.innerHTML = '';
-            
-            Object.entries(committees).forEach(([id, committee]) => {
-                const committeeCard = document.createElement('div');
-                committeeCard.className = 'card';
-                committeeCard.innerHTML = `
-                    <h3>${committee.topicTitle}</h3>
-                    <p><strong>المناقش الأول:</strong> ${committee.firstDiscussant}</p>
-                    <p><strong>المناقش الثاني:</strong> ${committee.secondDiscussant}</p>
-                    <button class="primary-btn" onclick="deleteCommittee('${id}')">حذف</button>
-                `;
-                committeeList.appendChild(committeeCard);
-            });
-        }
-
-        function renderDiscussantsList(discussants) {
-            const discussantsList = document.getElementById('discussants-list');
-            const discussantToLimitSelect = document.getElementById('discussant-to-limit');
-            
-            discussantsList.innerHTML = '';
-            discussantToLimitSelect.innerHTML = '<option value="">اختر المناقش</option>';
-            
-            Object.entries(discussants).forEach(([id, discussant]) => {
-                // Add to list
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <span>${discussant.name} (الحد الأقصى: ${discussant.maxUsage || 2})</span>
-                    <button class="secondary-btn" onclick="deleteDiscussant('${id}')">حذف</button>
-                `;
-                discussantsList.appendChild(li);
-                
-                // Add to dropdown
-                const option = document.createElement('option');
-                option.value = id;
-                option.textContent = discussant.name;
-                discussantToLimitSelect.appendChild(option);
-            });
-        }
-
-        // Form Handling Functions
-        async function handleAddTopic(e) {
-            e.preventDefault();
-            
-            const supervisor = document.getElementById('supervisor-name').value.trim();
-            const title = document.getElementById('topic-title').value.trim();
-            const profile = document.getElementById('topic-profile').value;
-            
-            if (!supervisor || !title || !profile) {
-                alert('الرجاء ملء جميع الحقول');
-                return;
-            }
-            
-            try {
-                loadingSpinner.classList.remove('hidden');
-                
-                const newTopic = {
-                    supervisor,
-                    title,
-                    profile,
-                    createdAt: firebase.database.ServerValue.TIMESTAMP
-                };
-                
-                // Push to Firebase
-                await database.ref(`topics/${currentYear}`).push(newTopic);
-                
-                // Close modal and reset form
-                document.getElementById('topic-modal').classList.add('hidden');
-                document.getElementById('topic-form').reset();
-            } catch (error) {
-                console.error('Error adding topic:', error);
-                alert('حدث خطأ أثناء إضافة الموضوع');
-            } finally {
-                loadingSpinner.classList.add('hidden');
-            }
-        }
-
-        async function handleAddCommittee(e) {
-            e.preventDefault();
-            
-            const topicId = document.getElementById('committee-topic').value;
-            const firstDiscussantId = document.getElementById('first-discussant').value;
-            const secondDiscussantId = document.getElementById('second-discussant').value;
-            
-            if (!topicId || !firstDiscussantId || !secondDiscussantId) {
-                alert('الرجاء ملء جميع الحقول');
-                return;
-            }
-            
-            if (firstDiscussantId === secondDiscussantId) {
-                alert('يجب اختيار مناقشين مختلفين');
-                return;
-            }
-            
-            try {
-                loadingSpinner.classList.remove('hidden');
-                
-                // Get topic and discussant details
-                const topicSnapshot = await database.ref(`topics/${currentYear}/${topicId}`).once('value');
-                const topic = topicSnapshot.val();
-                
-                const firstDiscussant = window.discussants[firstDiscussantId];
-                const secondDiscussant = window.discussants[secondDiscussantId];
-                
-                if (!topic || !firstDiscussant || !secondDiscussant) {
-                    throw new Error('Invalid selection');
-                }
-                
-                const newCommittee = {
-                    topicId,
-                    topicTitle: topic.title,
-                    firstDiscussantId,
-                    firstDiscussant: firstDiscussant.name,
-                    secondDiscussantId,
-                    secondDiscussant: secondDiscussant.name,
-                    createdAt: firebase.database.ServerValue.TIMESTAMP
-                };
-                
-                // Push to Firebase
-                await database.ref(`committees/${currentYear}`).push(newCommittee);
-                
-                // Close modal and reset form
-                document.getElementById('committee-modal').classList.add('hidden');
-                document.getElementById('committee-form').reset();
-            } catch (error) {
-                console.error('Error adding committee:', error);
-                alert('حدث خطأ أثناء إضافة اللجنة');
-            } finally {
-                loadingSpinner.classList.add('hidden');
-            }
-        }
-
-        async function populateCommitteeForm() {
-            const topicSelect = document.getElementById('committee-topic');
-            topicSelect.innerHTML = '<option value="">اختر الموضوع</option>';
-            
-            // Get topics for current year
-            const topicsSnapshot = await database.ref(`topics/${currentYear}`).once('value');
-            const topics = topicsSnapshot.val() || {};
-            
-            Object.entries(topics).forEach(([id, topic]) => {
-                const option = document.createElement('option');
-                option.value = id;
-                option.textContent = `${topic.title} (${topic.supervisor})`;
-                topicSelect.appendChild(option);
-            });
-            
-            // Populate discussant dropdowns
-            populateDiscussantDropdowns(window.discussants || {});
-        }
-
-        function populateDiscussantDropdowns(discussants) {
-            const firstDiscussantSelect = document.getElementById('first-discussant');
-            const secondDiscussantSelect = document.getElementById('second-discussant');
-            
-            firstDiscussantSelect.innerHTML = '<option value="">اختر المناقش الأول</option>';
-            secondDiscussantSelect.innerHTML = '<option value="">اختر المناقش الثاني</option>';
-            
-            Object.entries(discussants).forEach(([id, discussant]) => {
-                const option1 = document.createElement('option');
-                option1.value = id;
-                option1.textContent = `${discussant.name} (الحد: ${discussant.maxUsage || 2})`;
-                firstDiscussantSelect.appendChild(option1);
-                
-                const option2 = document.createElement('option');
-                option2.value = id;
-                option2.textContent = `${discussant.name} (الحد: ${discussant.maxUsage || 2})`;
-                secondDiscussantSelect.appendChild(option2);
-            });
-        }
-
-        // Discussant Management
-        async function loadDiscussants() {
-            const discussantsSnapshot = await database.ref('discussants').once('value');
-            const discussants = discussantsSnapshot.val() || {};
-            renderDiscussantsList(discussants);
-        }
-
-        async function handleAddDiscussant() {
-            const nameInput = document.getElementById('new-discussant');
-            const name = nameInput.value.trim();
-            
-            if (!name) {
-                alert('الرجاء إدخال اسم المناقش');
-                return;
-            }
-            
-            try {
-                loadingSpinner.classList.remove('hidden');
-                
-                const newDiscussant = {
-                    name,
-                    maxUsage: 2, // Default value
-                    createdAt: firebase.database.ServerValue.TIMESTAMP
-                };
-                
-                await database.ref('discussants').push(newDiscussant);
-                nameInput.value = '';
-            } catch (error) {
-                console.error('Error adding discussant:', error);
-                alert('حدث خطأ أثناء إضافة المناقش');
-            } finally {
-                loadingSpinner.classList.add('hidden');
-            }
-        }
-
-        async function handleUpdateDiscussantLimit() {
-            const discussantId = document.getElementById('discussant-to-limit').value;
-            const maxUsage = document.getElementById('max-discussant-usage').value;
-            
-            if (!discussantId) {
-                alert('الرجاء اختيار مناقش');
-                return;
-            }
-            
-            try {
-                loadingSpinner.classList.remove('hidden');
-                await database.ref(`discussants/${discussantId}/maxUsage`).set(parseInt(maxUsage));
-                alert('تم تحديث الحد الأقصى بنجاح');
-            } catch (error) {
-                console.error('Error updating discussant limit:', error);
-                alert('حدث خطأ أثناء التحديث');
-            } finally {
-                loadingSpinner.classList.add('hidden');
-            }
-        }
-
-        // Delete Functions
-        async function deleteTopic(id) {
-            if (!confirm('هل أنت متأكد من حذف هذا الموضوع؟')) return;
-            
-            try {
-                loadingSpinner.classList.remove('hidden');
-                await database.ref(`topics/${currentYear}/${id}`).remove();
-            } catch (error) {
-                console.error('Error deleting topic:', error);
-                alert('حدث خطأ أثناء الحذف');
-            } finally {
-                loadingSpinner.classList.add('hidden');
-            }
-        }
-
-        async function deleteCommittee(id) {
-            if (!confirm('هل أنت متأكد من حذف هذه اللجنة؟')) return;
-            
-            try {
-                loadingSpinner.classList.remove('hidden');
-                await database.ref(`committees/${currentYear}/${id}`).remove();
-            } catch (error) {
-                console.error('Error deleting committee:', error);
-                alert('حدث خطأ أثناء الحذف');
-            } finally {
-                loadingSpinner.classList.add('hidden');
-            }
-        }
-
-        async function deleteDiscussant(id) {
-            if (!confirm('هل أنت متأكد من حذف هذا المناقش؟ سيتم حذفه من جميع اللجان.')) return;
-            
-            try {
-                loadingSpinner.classList.remove('hidden');
-                
-                // First delete the discussant
-                await database.ref(`discussants/${id}`).remove();
-                
-                // Then remove from any committees
-                const committeesSnapshot = await database.ref(`committees/${currentYear}`).once('value');
-                const committees = committeesSnapshot.val() || {};
-                
-                const updates = {};
-                Object.entries(committees).forEach(([committeeId, committee]) => {
-                    if (committee.firstDiscussantId === id || committee.secondDiscussantId === id) {
-                        updates[`committees/${currentYear}/${committeeId}`] = null;
-                    }
-                });
-                
-                if (Object.keys(updates).length > 0) {
-                    await database.ref().update(updates);
-                }
-            } catch (error) {
-                console.error('Error deleting discussant:', error);
-                alert('حدث خطأ أثناء الحذف');
-            } finally {
-                loadingSpinner.classList.add('hidden');
-            }
-        }
-
-        // Excel Export Functions
-        async function downloadTopicsExcel() {
-            try {
-                loadingSpinner.classList.remove('hidden');
-                
-                const snapshot = await database.ref(`topics/${currentYear}`).once('value');
-                const topics = snapshot.val() || {};
-                
-                const data = Object.values(topics).map(topic => ({
-                    'المؤطر': topic.supervisor,
-                    'الموضوع': topic.title,
-                    'الملمح': topic.profile,
-                    'تاريخ الإضافة': new Date(topic.createdAt).toLocaleDateString('ar-EG')
-                }));
-                
-                const worksheet = XLSX.utils.json_to_sheet(data);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, 'مواضيع التخرج');
-                XLSX.writeFile(workbook, `مواضيع_التخرج_${currentYear}.xlsx`);
-            } catch (error) {
-                console.error('Error exporting to Excel:', error);
-                alert('حدث خطأ أثناء التصدير');
-            } finally {
-                loadingSpinner.classList.add('hidden');
-            }
-        }
-
-        async function downloadCommitteesExcel() {
-            try {
-                loadingSpinner.classList.remove('hidden');
-                
-                const snapshot = await database.ref(`committees/${currentYear}`).once('value');
-                const committees = snapshot.val() || {};
-                
-                const data = Object.values(committees).map(committee => ({
-                    'الموضوع': committee.topicTitle,
-                    'المناقش الأول': committee.firstDiscussant,
-                    'المناقش الثاني': committee.secondDiscussant,
-                    'تاريخ الإضافة': new Date(committee.createdAt).toLocaleDateString('ar-EG')
-                }));
-                
-                const worksheet = XLSX.utils.json_to_sheet(data);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, 'لجان المناقشة');
-                XLSX.writeFile(workbook, `لجان_المناقشة_${currentYear}.xlsx`);
-            } catch (error) {
-                console.error('Error exporting to Excel:', error);
-                alert('حدث خطأ أثناء التصدير');
-            } finally {
-                loadingSpinner.classList.add('hidden');
-            }
-        }
-
-        // Make functions available globally for HTML onclick handlers
-        window.deleteTopic = deleteTopic;
-        window.deleteCommittee = deleteCommittee;
-        window.deleteDiscussant = deleteDiscussant;
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
