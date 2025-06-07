@@ -1,14 +1,19 @@
-// Initial Data
-const validPasswords = ['RgT2025EnSl', 'A3$dF', 'zX#7k', 'm9@Lp', 'Q2!vB', 
-                       'nT6$e', 'G#1yW', 'o9Z@c', 'Hx3!M', 'b$E2t',
-                       'J7q#R', 'V!4sN', 'k@W5d', 'U#v9g', 'yL6$B',
-                       'p!T3z', 'D@r1K', 's#8oM', 'Zx2$h', 'D!c7M',
-                       'Lw@5j', 'C#o3e', 't7!NZ', 'M2$dV', 'aP#9f',
-                       'B!q6y', 'hX@4G', 'N#1zw', 'j6$LT', 'R!v2c',
-                       'e@M7b', 'i#o5Q', 'O3$Nd', 'f!C9x',
-                       'K@y8W', 'xZ#1p', 'E4!uv', 'g@Rw2',
-                       'T#6ay', 'q!9BC', 'W@z5m', 'Y#7Lo',
-                       'd!K8r', 'vP@2x', 'S#o4j'];
+// Firebase configuration - REPLACE WITH YOUR ACTUAL CONFIG
+const firebaseConfig = {
+            apiKey: "AIzaSyCC36epRow_C0pILQdmHZQxW-Qvtu-1U2k",
+            authDomain: "ensl-7118d.firebaseapp.com",
+            databaseURL: "https://ensl-7118d-default-rtdb.firebaseio.com",
+            projectId: "ensl-7118d",
+            storageBucket: "ensl-7118d.firebasestorage.app",
+            messagingSenderId: "830633315062",
+            appId: "1:830633315062:web:7036091381389edf7e7ad7"
+        };
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const auth = firebase.auth();
+
 let currentUser = null;
 let currentYear = '2025';
 // Data Structures
