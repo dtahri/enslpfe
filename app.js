@@ -14,6 +14,10 @@ const app = firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 
+firebase.auth().signInWithEmailAndPassword("admin@example.com", "RgT2025EnSl")
+  .then(user => console.log("Logged in:", user))
+  .catch(error => console.error("Error:", error));
+
 // User credentials (email/password combinations)
 const userCredentials = [
     { email: "d.tahri@lagh-univ.dz", password: "bio&19905", role: "admin" },
