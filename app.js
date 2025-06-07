@@ -6,75 +6,17 @@ const firebaseConfig = {
             projectId: "ensl-7118d",
             storageBucket: "ensl-7118d.firebasestorage.app",
             messagingSenderId: "830633315062",
-            appId: "1:830633315062:web:7036091381389edf7e7ad7",
-            measurementId: "G-2EL41ZJNFP"
-        };
+            appId: "1:830633315062:web:7036091381389edf7e7ad7"
+};
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 
+// State variables
 let currentUser = null;
 let currentYear = '2025';
-// Data Structures
-let topics = {
-    '2025': [],
-    '2026': [],
-    '2027': [],
-    '2028': []
-};
-
-let committees = {
-    '2025': [],
-    '2026': [],
-    '2027': [],
-    '2028': []
-};
-
-let discussants = [
-"أ. برمضان الطيب",
-    "أ. بن عابد هدى خديجة",
-    "أ. بن مبارك هجيرة",
-    "أ. بوبريمة أريج",
-    "أ. بوصالح ليلى",
-    "أ. بولنوار نور الدين",
-    "أ. بوهالي عبد الباقي",
-    "أ. جاب الله خلف الله",
-    "أ. حاج سعيد حسينة",
-    "أ. حاج عيسى توفيق",
-    "أ. حمدي عائشة",
-    "أ. خنيفي محمد أمين",
-    "أ. دحمان سفيان",
-    "أ. رايسي علي",
-    "أ. سرسق التالية",
-    "أ. شلغوم منال",
-    "أ. صديقي السعيد",
-    "أ. ضيف القندوز",
-    "أ. طاهري الجيلالي",
-    "أ. طليبة هالة",
-    "أ. عويسي هاجر",
-    "أ. فيلالي عبد السلام",
-    "أ. قاسمي صفية",
-    "أ. لبيض رضوان",
-    "أ. لعربي ابراهيم",
-    "أ. ماسنة فتيحة",
-    "أ. مرباح كمال زين العابدين",
-    "أ. معمري مليكة",
-    "أ. ناجي فاطمة الزهراء"
-];
-
-let discussantLimits = {};
-let discussantUsage = {};
-
-// Initialize default limits
-function initializeDiscussantLimits() {
-    discussants.forEach(discussant => {
-        if (!discussantLimits[discussant]) {
-            discussantLimits[discussant] = 3; // Default limit
-        }
-    });
-}
 
 // DOM Elements
 const loginPage = document.getElementById('login-page');
@@ -116,107 +58,99 @@ const supervisorInput = document.getElementById('supervisor-name');
 const topicTitleInput = document.getElementById('topic-title');
 const topicProfileSelect = document.getElementById('topic-profile');
 
-// Load Saved Data
-function loadSavedData() {
-    const savedTopics = localStorage.getItem('academicTopics');
-    const savedCommittees = localStorage.getItem('academicCommittees');
-    const savedDiscussants = localStorage.getItem('academicDiscussants');
-    const savedDiscussantLimits = localStorage.getItem('academicDiscussantLimits');
-    const savedDiscussantUsage = localStorage.getItem('academicDiscussantUsage');
+// Initialize the app
+document.addEventListener('DOMContentLoaded', () => {
+    setupEventListeners();
+    checkAuthState();
+});
 
-    if (savedTopics) topics = JSON.parse(savedTopics);
-    if (savedCommittees) committees = JSON.parse(savedCommittees);
-    if (savedDiscussants) discussants = JSON.parse(savedDiscussants);
-    if (savedDiscussantLimits) discussantLimits = JSON.parse(savedDiscussantLimits);
-    if (savedDiscussantUsage) discussantUsage = JSON.parse(savedDiscussantUsage);
-
-    initializeDiscussantLimits();
-    updateDiscussantUsage();
-}
-
-// Save Data
-function saveData() {
-    localStorage.setItem('academicTopics', JSON.stringify(topics));
-    localStorage.setItem('academicCommittees', JSON.stringify(committees));
-    localStorage.setItem('academicDiscussants', JSON.stringify(discussants));
-    localStorage.setItem('academicDiscussantLimits', JSON.stringify(discussantLimits));
-    localStorage.setItem('academicDiscussantUsage', JSON.stringify(discussantUsage));
-}
-
-// Update Discussant Usage Count
-function updateDiscussantUsage() {
-    discussantUsage = {};
-    Object.values(committees).forEach(yearCommittees => {
-        yearCommittees.forEach(committee => {
-            discussantUsage[committee.firstDiscussant] = (discussantUsage[committee.firstDiscussant] || 0) + 1;
-            discussantUsage[committee.secondDiscussant] = (discussantUsage[committee.secondDiscussant] || 0) + 1;
-        });
+// Firebase Auth State Listener
+function checkAuthState() {
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            // User is signed in
+            currentUser = user.uid;
+            loginPage.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            loadInitialData();
+        } else {
+            // No user is signed in
+            currentUser = null;
+            loginPage.classList.remove('hidden');
+            mainContent.classList.add('hidden');
+        }
     });
-    saveData();
 }
 
-// Download Topics as Excel
-function downloadAsExcel() {
-    const excelData = topics[currentYear].map(topic => ({
-        'لقب المؤطر': topic.supervisor,
-        'الموضوع': topic.title,
-        'الملمح': topic.profile,
-        'الحالة': topic.status === 'accepted' ? 'مقبول' : 
-                 topic.status === 'rejected' ? 'مؤجل' : 'قيد المراجعة',
-        'تاريخ الإضافة': new Date(topic.timestamp).toLocaleString('ar-EG')
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'المواضيع');
-    XLSX.writeFile(workbook, `مواضيع_${currentYear}.xlsx`);
+// Authentication Handler
+async function handleLogin() {
+    const password = passwordInput.value.trim();
+    
+    if (!password) {
+        loginError.textContent = 'الرجاء إدخال كلمة المرور';
+        return;
+    }
+    
+    try {
+        // Use the admin email you registered in Firebase Console
+        await auth.signInWithEmailAndPassword('d.tahri@lagh-univ.dz', bio&19905);
+        loginError.textContent = '';
+    } catch (error) {
+        console.error('Login error:', error);
+        loginError.textContent = 'كلمة المرور غير صحيحة';
+    }
 }
 
-// Download Committees as Excel
-function downloadCommitteesAsExcel() {
-    const excelData = committees[currentYear].map(committee => {
-        const topicInfo = topics[currentYear].find(t => t.title === committee.topic) || {};
-        return {
-            'الموضوع': committee.topic,
-            'المناقش الأول': committee.firstDiscussant,
-            'المناقش الثاني': committee.secondDiscussant,
-            'لقب المؤطر': topicInfo.supervisor || 'غير معروف',
-            'الملمح': topicInfo.profile || 'غير معروف'
-        };
+// Logout Handler
+function handleLogout() {
+    auth.signOut();
+}
+
+// Data Loading Functions
+function loadInitialData() {
+    currentYearTitle.textContent = `السنة الجامعية: ${currentYear}`;
+    loadDataForYear(currentYear);
+}
+
+function loadDataForYear(year) {
+    // Load topics
+    database.ref(`topics/${year}`).on('value', (snapshot) => {
+        const topics = snapshot.val() || {};
+        renderTopics(topics);
     });
-
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'لجان المناقشة');
-    XLSX.writeFile(workbook, `لجان_المناقشة_${currentYear}.xlsx`);
+    
+    // Load committees
+    database.ref(`committees/${year}`).on('value', (snapshot) => {
+        const committees = snapshot.val() || {};
+        renderCommittees(committees);
+    });
+    
+    // Load discussants
+    database.ref('discussants').on('value', (snapshot) => {
+        const discussants = snapshot.val() || {};
+        window.discussants = discussants;
+        
+        // Update UI elements if they're open
+        if (!committeeModal.classList.contains('hidden')) {
+            populateCommitteeForm();
+        }
+        
+        if (!discussantsModal.classList.contains('hidden')) {
+            renderDiscussantsList(discussants);
+        }
+    });
 }
 
-// Render Topics
-function renderTopics() {
+// Rendering Functions
+function renderTopics(topics) {
     topicsList.innerHTML = '';
     
-    if (topics[currentYear].length === 0) {
+    if (Object.keys(topics).length === 0) {
         topicsList.innerHTML = '<p class="no-topics">لا توجد مواضيع مسجلة بعد</p>';
         return;
     }
     
-    if (currentUser === 'RgT2025EnSl') {
-        downloadExcelBtn.classList.remove('hidden');
-    } else {
-        downloadExcelBtn.classList.add('hidden');
-    }
-    
-    // Filter topics to show only current user's topics (unless admin)
-    const userTopics = currentUser === 'RgT2025EnSl' 
-        ? topics[currentYear] 
-        : topics[currentYear].filter(topic => topic.addedBy === currentUser);
-    
-    if (userTopics.length === 0) {
-        topicsList.innerHTML = '<p class="no-topics">لا توجد مواضيع مسجلة لك</p>';
-        return;
-    }
-    
-    userTopics.forEach((topic, index) => {
+    Object.entries(topics).forEach(([id, topic]) => {
         const topicCard = document.createElement('div');
         topicCard.className = `topic-card ${topic.status}`;
         
@@ -233,342 +167,49 @@ function renderTopics() {
                 <span class="topic-profile">${topic.profile}</span>
                 <span class="topic-status ${topic.status}">${statusText}</span>
             </div>
+            <div class="topic-actions">
+                <button class="action-btn delete-btn" onclick="deleteTopic('${id}')">حذف</button>
+                ${currentUser === 'admin' ? `
+                <button class="action-btn accept-btn" onclick="updateTopicStatus('${id}', 'accepted')">قبول</button>
+                <button class="action-btn reject-btn" onclick="updateTopicStatus('${id}', 'rejected')">تأجيل</button>
+                <button class="action-btn change-profile-btn" onclick="changeTopicProfile('${id}')">تغيير الملمح</button>
+                ` : ''}
+            </div>
         `;
-        
-        const actionsDiv = document.createElement('div');
-        actionsDiv.className = 'topic-actions';
-        
-        if (topic.addedBy === currentUser || currentUser === 'RgT2025EnSl') {
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'action-btn delete-btn';
-            deleteBtn.innerHTML = 'حذف';
-            deleteBtn.onclick = () => deleteTopic(topic.addedBy === currentUser ? 
-                topics[currentYear].findIndex(t => t.timestamp === topic.timestamp) : 
-                index);
-            actionsDiv.appendChild(deleteBtn);
-        }
-        
-        if (currentUser === 'RgT2025EnSl') {
-            if (topic.status !== 'accepted') {
-                const acceptBtn = document.createElement('button');
-                acceptBtn.className = 'action-btn accept-btn';
-                acceptBtn.innerHTML = '? مقبول';
-                acceptBtn.onclick = () => updateTopicStatus(index, 'accepted');
-                actionsDiv.appendChild(acceptBtn);
-            }
-            
-            if (topic.status !== 'rejected') {
-                const rejectBtn = document.createElement('button');
-                rejectBtn.className = 'action-btn reject-btn';
-                rejectBtn.innerHTML = '? مؤجل';
-                rejectBtn.onclick = () => updateTopicStatus(index, 'rejected');
-                actionsDiv.appendChild(rejectBtn);
-            }
-            
-            const changeProfileBtn = document.createElement('button');
-            changeProfileBtn.className = 'action-btn change-profile-btn';
-            changeProfileBtn.innerHTML = 'تغيير الملمح';
-            changeProfileBtn.onclick = () => changeTopicProfile(index);
-            actionsDiv.appendChild(changeProfileBtn);
-        }
-        
-        if (actionsDiv.children.length > 0) {
-            topicCard.appendChild(actionsDiv);
-        }
         
         topicsList.appendChild(topicCard);
     });
 }
 
-// Render Committees
-function renderCommittees() {
+function renderCommittees(committees) {
     committeeList.innerHTML = '';
     
-    if (currentUser === 'RgT2025EnSl') {
-        downloadCommitteeExcelBtn.classList.remove('hidden');
-        manageDiscussantsBtn.classList.remove('hidden');
-    } else {
-        downloadCommitteeExcelBtn.classList.add('hidden');
-        manageDiscussantsBtn.classList.add('hidden');
-    }
-    
-    if (committees[currentYear].length === 0) {
+    if (Object.keys(committees).length === 0) {
         committeeList.innerHTML = '<p class="no-topics">لا توجد لجان مناقشة مسجلة بعد</p>';
         return;
     }
     
-    // Filter committees to show only current user's committees (unless admin)
-    const userCommittees = currentUser === 'RgT2025EnSl' 
-        ? committees[currentYear] 
-        : committees[currentYear].filter(committee => committee.addedBy === currentUser);
-    
-    if (userCommittees.length === 0) {
-        committeeList.innerHTML = '<p class="no-topics">لا توجد لجان مناقشة مسجلة لك</p>';
-        return;
-    }
-    
-    userCommittees.forEach((committee, index) => {
+    Object.entries(committees).forEach(([id, committee]) => {
         const committeeCard = document.createElement('div');
         committeeCard.className = 'committee-card';
-        
-        const topicInfo = topics[currentYear].find(t => t.title === committee.topic) || {};
         
         committeeCard.innerHTML = `
             <h3>${committee.topic}</h3>
             <div class="committee-meta">
                 <p><strong>المناقش الأول:</strong> ${committee.firstDiscussant}</p>
                 <p><strong>المناقش الثاني:</strong> ${committee.secondDiscussant}</p>
-                <p><strong>المؤطر:</strong> ${topicInfo.supervisor || 'غير معروف'}</p>
-                <p><strong>الملمح:</strong> ${topicInfo.profile || 'غير معروف'}</p>
+            </div>
+            <div class="topic-actions">
+                <button class="action-btn delete-btn" onclick="deleteCommittee('${id}')">حذف</button>
             </div>
         `;
         
-        const actionsDiv = document.createElement('div');
-        actionsDiv.className = 'topic-actions';
-        
-        if (committee.addedBy === currentUser || currentUser === 'RgT2025EnSl') {
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'action-btn delete-btn';
-            deleteBtn.innerHTML = 'حذف';
-            deleteBtn.onclick = () => deleteCommittee(index);
-            actionsDiv.appendChild(deleteBtn);
-        }
-        
-        committeeCard.appendChild(actionsDiv);
         committeeList.appendChild(committeeCard);
     });
 }
 
-// Delete Topic
-function deleteTopic(index) {
-    if (confirm('هل أنت متأكد من حذف هذا الموضوع؟')) {
-        topics[currentYear].splice(index, 1);
-        saveData();
-        renderTopics();
-    }
-}
-
-// Delete Committee
-function deleteCommittee(index) {
-    if (confirm('هل أنت متأكد من حذف هذه اللجنة؟')) {
-        // Update discussant usage before deleting
-        const committee = committees[currentYear][index];
-        discussantUsage[committee.firstDiscussant]--;
-        discussantUsage[committee.secondDiscussant]--;
-        
-        committees[currentYear].splice(index, 1);
-        saveData();
-        renderCommittees();
-    }
-}
-
-// Update Topic Status
-function updateTopicStatus(index, status) {
-    topics[currentYear][index].status = status;
-    saveData();
-    renderTopics();
-}
-
-// Change Topic Profile
-function changeTopicProfile(index) {
-    const newProfile = prompt('اختر الملمح الجديد:\n1. متوسط\n2. ثانوي', topics[currentYear][index].profile);
-    
-    if (newProfile && ['متوسط', 'ثانوي'].includes(newProfile)) {
-        topics[currentYear][index].profile = newProfile;
-        saveData();
-        renderTopics();
-    } else if (newProfile) {
-        alert('الرجاء اختيار "متوسط" أو "ثانوي" فقط');
-    }
-}
-
-// Open Committee Modal
-function openCommitteeModal() {
-    // Fill topics select with only current user's accepted topics (or all if admin)
-    committeeTopicSelect.innerHTML = '<option value="">اختر الموضوع</option>';
-    
-    const userTopics = currentUser === 'RgT2025EnSl' 
-        ? topics[currentYear].filter(t => t.status === 'accepted')
-        : topics[currentYear].filter(t => t.addedBy === currentUser && t.status === 'accepted');
-    
-    userTopics.forEach(topic => {
-        const option = document.createElement('option');
-        option.value = topic.title;
-        option.textContent = topic.title;
-        committeeTopicSelect.appendChild(option);
-    });
-    
-    // Fill discussants selects
-    updateDiscussantSelects();
-    
-    committeeModal.classList.remove('hidden');
-}
-
-// Update Discussant Selects with limits enforcement
-function updateDiscussantSelects() {
-    firstDiscussantSelect.innerHTML = '<option value="">اختر المناقش الأول</option>';
-    secondDiscussantSelect.innerHTML = '<option value="">اختر المناقش الثاني</option>';
-    
-    discussants.forEach(discussant => {
-        const count = discussantUsage[discussant] || 0;
-        const limit = discussantLimits[discussant] || 3;
-        const disabled = count >= limit;
-        
-        const option1 = document.createElement('option');
-        option1.value = discussant;
-        option1.textContent = `${discussant} (${count}/${limit})`;
-        option1.disabled = disabled;
-        firstDiscussantSelect.appendChild(option1);
-        
-        const option2 = document.createElement('option');
-        option2.value = discussant;
-        option2.textContent = `${discussant} (${count}/${limit})`;
-        option2.disabled = disabled;
-        secondDiscussantSelect.appendChild(option2);
-    });
-    
-    // Make dropdowns scrollable
-    firstDiscussantSelect.size = 10;
-    secondDiscussantSelect.size = 10;
-    firstDiscussantSelect.style.overflowY = 'auto';
-    secondDiscussantSelect.style.overflowY = 'auto';
-}
-
-// Update Discussant Limit with full enforcement
-function updateDiscussantLimit() {
-    const discussant = discussantToLimitSelect.value;
-    const newLimit = parseInt(maxDiscussantUsageSelect.value);
-    
-    if (!discussant) {
-        alert('الرجاء اختيار مناقش');
-        return;
-    }
-    
-    if (isNaN(newLimit) || newLimit < 1 || newLimit > 4) {
-        alert('الحد الأقصى يجب أن يكون بين 1 و 4');
-        return;
-    }
-    
-    const currentUsage = discussantUsage[discussant] || 0;
-    if (currentUsage > newLimit) {
-        alert(`لا يمكن تعيين الحد إلى ${newLimit} لأن المناقش مستخدم ${currentUsage} مرات حالياً`);
-        return;
-    }
-    
-    discussantLimits[discussant] = newLimit;
-    saveData();
-    updateDiscussantSelects(); // Update all selects immediately
-    openDiscussantsModal();
-}
-
-// Open Discussants Management Modal
-function openDiscussantsModal() {
-    discussantsList.innerHTML = '';
-    
-    // Populate discussants list
-    discussants.forEach((discussant, index) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <span>${discussant}</span>
-            <span class="remove-discussant" data-index="${index}">×</span>
-        `;
-        discussantsList.appendChild(li);
-    });
-    
-    // Set up remove discussant events
-    document.querySelectorAll('.remove-discussant').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const index = parseInt(this.getAttribute('data-index'));
-            const discussant = discussants[index];
-            
-            // Check if discussant is in use
-            if (discussantUsage[discussant] > 0) {
-                alert('لا يمكن حذف هذا المناقش لأنه مستخدم في لجان حالية');
-                return;
-            }
-            
-            if (confirm(`هل أنت متأكد من حذف ${discussant}؟`)) {
-                discussants.splice(index, 1);
-                delete discussantLimits[discussant];
-                saveData();
-                openDiscussantsModal();
-            }
-        });
-    });
-    
-    // Populate discussant limit controls
-    discussantToLimitSelect.innerHTML = '<option value="">اختر المناقش</option>';
-    discussants.forEach(discussant => {
-        const option = document.createElement('option');
-        option.value = discussant;
-        option.textContent = discussant;
-        discussantToLimitSelect.appendChild(option);
-    });
-    
-    discussantToLimitSelect.disabled = discussants.length === 0;
-    maxDiscussantUsageSelect.disabled = discussants.length === 0;
-    updateLimitBtn.disabled = discussants.length === 0;
-    
-    // Set up discussant limit change
-    discussantToLimitSelect.addEventListener('change', function() {
-        if (this.value) {
-            const currentLimit = discussantLimits[this.value] || 3;
-            maxDiscussantUsageSelect.value = currentLimit;
-        }
-    });
-    
-    discussantsModal.classList.remove('hidden');
-}
-
-// Add New Discussant
-function addNewDiscussant() {
-    const name = newDiscussantInput.value.trim();
-    
-    if (!name) {
-        alert('الرجاء إدخال اسم المناقش');
-        return;
-    }
-    
-    if (discussants.includes(name)) {
-        alert('هذا المناقش موجود بالفعل!');
-        return;
-    }
-    
-    discussants.push(name);
-    discussantLimits[name] = 3; // Default limit
-    newDiscussantInput.value = '';
-    saveData();
-    openDiscussantsModal();
-}
-
-// Update Discussant Limit
-function updateDiscussantLimit() {
-    const discussant = discussantToLimitSelect.value;
-    const newLimit = parseInt(maxDiscussantUsageSelect.value);
-    
-    if (!discussant) {
-        alert('الرجاء اختيار مناقش');
-        return;
-    }
-    
-    if (isNaN(newLimit) || newLimit < 1 || newLimit > 4) {
-        alert('الحد الأقصى يجب أن يكون بين 1 و 4');
-        return;
-    }
-    
-    const currentUsage = discussantUsage[discussant] || 0;
-    if (currentUsage > newLimit) {
-        alert(`لا يمكن تعيين الحد إلى ${newLimit} لأن المناقش مستخدم ${currentUsage} مرات حالياً`);
-        return;
-    }
-    
-    discussantLimits[discussant] = newLimit;
-    saveData();
-    openDiscussantsModal();
-}
-
-// Submit Topic Form
-function submitTopicForm(e) {
+// Form Handling Functions
+async function handleAddTopic(e) {
     e.preventDefault();
     
     const supervisor = supervisorInput.value.trim();
@@ -576,166 +217,373 @@ function submitTopicForm(e) {
     const profile = topicProfileSelect.value;
     
     if (!supervisor || !title || !profile) {
-        alert('الرجاء ملء جميع الحقول المطلوبة');
+        alert('الرجاء ملء جميع الحقول');
         return;
     }
     
-    const newTopic = {
-        supervisor,
-        title,
-        profile,
-        status: 'pending',
-        addedBy: currentUser,
-        timestamp: new Date().toISOString()
-    };
-    
-    topics[currentYear].push(newTopic);
-    saveData();
-    topicModal.classList.add('hidden');
-    topicForm.reset();
-    renderTopics();
+    try {
+        const newTopic = {
+            supervisor,
+            title,
+            profile,
+            status: 'pending',
+            addedBy: currentUser,
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+        };
+        
+        await database.ref(`topics/${currentYear}`).push(newTopic);
+        
+        topicModal.classList.add('hidden');
+        topicForm.reset();
+    } catch (error) {
+        console.error('Error adding topic:', error);
+        alert('حدث خطأ أثناء إضافة الموضوع');
+    }
 }
 
-// Submit Committee Form
-function submitCommitteeForm(e) {
+async function handleAddCommittee(e) {
     e.preventDefault();
     
-    const topic = committeeTopicSelect.value;
-    const firstDiscussant = firstDiscussantSelect.value;
-    const secondDiscussant = secondDiscussantSelect.value;
+    const topicId = committeeTopicSelect.value;
+    const firstDiscussantId = firstDiscussantSelect.value;
+    const secondDiscussantId = secondDiscussantSelect.value;
     
-    if (!topic || !firstDiscussant || !secondDiscussant) {
-        alert('الرجاء ملء جميع الحقول المطلوبة');
+    if (!topicId || !firstDiscussantId || !secondDiscussantId) {
+        alert('الرجاء ملء جميع الحقول');
         return;
     }
     
-    if (firstDiscussant === secondDiscussant) {
-        alert('لا يمكن اختيار نفس المناقش مرتين');
+    if (firstDiscussantId === secondDiscussantId) {
+        alert('يجب اختيار مناقشين مختلفين');
         return;
     }
     
-    const newCommittee = {
-        topic,
-        firstDiscussant,
-        secondDiscussant,
-        addedBy: currentUser,
-        timestamp: new Date().toISOString()
-    };
-    
-    committees[currentYear].push(newCommittee);
-    
-    // Update discussant usage
-    discussantUsage[firstDiscussant] = (discussantUsage[firstDiscussant] || 0) + 1;
-    discussantUsage[secondDiscussant] = (discussantUsage[secondDiscussant] || 0) + 1;
-    
-    saveData();
-    committeeModal.classList.add('hidden');
-    committeeForm.reset();
-    renderCommittees();
-}
-
-// Change Year
-function changeYear(year) {
-    currentYear = year;
-    currentYearTitle.textContent = `السنة الجامعية: ${year}`;
-    
-    // Update active year button
-    yearNavButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.year === year);
-    });
-    
-    // Render content for the new year
-    const activeSubpage = document.querySelector('.subpages-tabs button.active').dataset.page;
-    if (activeSubpage === 'topics') {
-        renderTopics();
-    } else {
-        renderCommittees();
-    }
-}
-
-// Change Subpage
-function changeSubpage(subpage) {
-    // Update active subpage button
-    subpageButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.page === subpage);
-    });
-    
-    // Show the selected content
-    topicsContent.classList.toggle('hidden', subpage !== 'topics');
-    committeeContent.classList.toggle('hidden', subpage !== 'committee');
-    
-    // Render the appropriate content
-    if (subpage === 'topics') {
-        renderTopics();
-    } else {
-        renderCommittees();
-    }
-}
-
-// Login Function
-function login() {
-    const password = passwordInput.value.trim();
-    
-    if (validPasswords.includes(password)) {
-        currentUser = password;
-        loginPage.classList.add('hidden');
-        mainContent.classList.remove('hidden');
+    try {
+        // Get topic and discussant details
+        const topicSnapshot = await database.ref(`topics/${currentYear}/${topicId}`).once('value');
+        const topic = topicSnapshot.val();
         
-        // Initialize the default view
-        changeYear(currentYear);
-        changeSubpage('topics');
+        const firstDiscussant = window.discussants[firstDiscussantId];
+        const secondDiscussant = window.discussants[secondDiscussantId];
         
-        loginError.textContent = '';
-        passwordInput.value = '';
-    } else {
-        loginError.textContent = 'كلمة المرور غير صحيحة';
+        if (!topic || !firstDiscussant || !secondDiscussant) {
+            throw new Error('Invalid selection');
+        }
+        
+        const newCommittee = {
+            topicId,
+            topicTitle: topic.title,
+            firstDiscussantId,
+            firstDiscussant: firstDiscussant.name,
+            secondDiscussantId,
+            secondDiscussant: secondDiscussant.name,
+            addedBy: currentUser,
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+        };
+        
+        await database.ref(`committees/${currentYear}`).push(newCommittee);
+        
+        committeeModal.classList.add('hidden');
+        committeeForm.reset();
+    } catch (error) {
+        console.error('Error adding committee:', error);
+        alert('حدث خطأ أثناء إضافة اللجنة');
     }
 }
 
-// Logout Function
-function logout() {
-    currentUser = null;
-    mainContent.classList.add('hidden');
-    loginPage.classList.remove('hidden');
+// Discussant Management
+async function loadDiscussants() {
+    const snapshot = await database.ref('discussants').once('value');
+    const discussants = snapshot.val() || {};
+    renderDiscussantsList(discussants);
 }
 
-// Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
-    loadSavedData();
+function renderDiscussantsList(discussants) {
+    discussantsList.innerHTML = '';
+    discussantToLimitSelect.innerHTML = '<option value="">اختر المناقش</option>';
     
+    Object.entries(discussants).forEach(([id, discussant]) => {
+        // Add to list
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span>${discussant.name} (الحد الأقصى: ${discussant.maxUsage || 2})</span>
+            <button class="secondary-btn" onclick="deleteDiscussant('${id}')">حذف</button>
+        `;
+        discussantsList.appendChild(li);
+        
+        // Add to dropdown
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = discussant.name;
+        discussantToLimitSelect.appendChild(option);
+    });
+}
+
+async function handleAddDiscussant() {
+    const name = newDiscussantInput.value.trim();
+    
+    if (!name) {
+        alert('الرجاء إدخال اسم المناقش');
+        return;
+    }
+    
+    try {
+        const newDiscussant = {
+            name,
+            maxUsage: 2, // Default limit
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+        };
+        
+        await database.ref('discussants').push(newDiscussant);
+        newDiscussantInput.value = '';
+    } catch (error) {
+        console.error('Error adding discussant:', error);
+        alert('حدث خطأ أثناء إضافة المناقش');
+    }
+}
+
+async function handleUpdateDiscussantLimit() {
+    const discussantId = discussantToLimitSelect.value;
+    const maxUsage = parseInt(maxDiscussantUsageSelect.value);
+    
+    if (!discussantId) {
+        alert('الرجاء اختيار مناقش');
+        return;
+    }
+    
+    if (isNaN(maxUsage) || maxUsage < 1 || maxUsage > 4) {
+        alert('الحد الأقصى يجب أن يكون بين 1 و 4');
+        return;
+    }
+    
+    try {
+        await database.ref(`discussants/${discussantId}/maxUsage`).set(maxUsage);
+        alert('تم تحديث الحد الأقصى بنجاح');
+    } catch (error) {
+        console.error('Error updating discussant limit:', error);
+        alert('حدث خطأ أثناء التحديث');
+    }
+}
+
+// Delete Functions
+window.deleteTopic = async function(id) {
+    if (confirm('هل أنت متأكد من حذف هذا الموضوع؟')) {
+        try {
+            await database.ref(`topics/${currentYear}/${id}`).remove();
+        } catch (error) {
+            console.error('Error deleting topic:', error);
+            alert('حدث خطأ أثناء الحذف');
+        }
+    }
+};
+
+window.deleteCommittee = async function(id) {
+    if (confirm('هل أنت متأكد من حذف هذه اللجنة؟')) {
+        try {
+            await database.ref(`committees/${currentYear}/${id}`).remove();
+        } catch (error) {
+            console.error('Error deleting committee:', error);
+            alert('حدث خطأ أثناء الحذف');
+        }
+    }
+};
+
+window.deleteDiscussant = async function(id) {
+    if (!confirm('هل أنت متأكد من حذف هذا المناقش؟ سيتم حذفه من جميع اللجان.')) return;
+    
+    try {
+        // First check if discussant is used in any committees
+        const committeesSnapshot = await database.ref(`committees/${currentYear}`).once('value');
+        const committees = committeesSnapshot.val() || {};
+        
+        let isUsed = false;
+        Object.values(committees).forEach(committee => {
+            if (committee.firstDiscussantId === id || committee.secondDiscussantId === id) {
+                isUsed = true;
+            }
+        });
+        
+        if (isUsed) {
+            alert('لا يمكن حذف هذا المناقش لأنه مستخدم في لجان حالية');
+            return;
+        }
+        
+        await database.ref(`discussants/${id}`).remove();
+    } catch (error) {
+        console.error('Error deleting discussant:', error);
+        alert('حدث خطأ أثناء الحذف');
+    }
+};
+
+// Excel Export Functions
+async function downloadTopicsExcel() {
+    try {
+        const snapshot = await database.ref(`topics/${currentYear}`).once('value');
+        const topics = snapshot.val() || {};
+        
+        const data = Object.values(topics).map(topic => ({
+            'لقب المؤطر': topic.supervisor,
+            'الموضوع': topic.title,
+            'الملمح': topic.profile,
+            'الحالة': topic.status === 'accepted' ? 'مقبول' : 
+                     topic.status === 'rejected' ? 'مؤجل' : 'قيد المراجعة',
+            'تاريخ الإضافة': new Date(topic.createdAt).toLocaleString('ar-EG')
+        }));
+        
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'المواضيع');
+        XLSX.writeFile(workbook, `مواضيع_${currentYear}.xlsx`);
+    } catch (error) {
+        console.error('Error exporting to Excel:', error);
+        alert('حدث خطأ أثناء التصدير');
+    }
+}
+
+async function downloadCommitteesExcel() {
+    try {
+        const topicsSnapshot = await database.ref(`topics/${currentYear}`).once('value');
+        const topics = topicsSnapshot.val() || {};
+        
+        const committeesSnapshot = await database.ref(`committees/${currentYear}`).once('value');
+        const committees = committeesSnapshot.val() || {};
+        
+        const data = Object.values(committees).map(committee => {
+            const topic = topics[committee.topicId] || {};
+            return {
+                'الموضوع': committee.topicTitle,
+                'المناقش الأول': committee.firstDiscussant,
+                'المناقش الثاني': committee.secondDiscussant,
+                'لقب المؤطر': topic.supervisor || 'غير معروف',
+                'الملمح': topic.profile || 'غير معروف'
+            };
+        });
+        
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'لجان المناقشة');
+        XLSX.writeFile(workbook, `لجان_المناقشة_${currentYear}.xlsx`);
+    } catch (error) {
+        console.error('Error exporting to Excel:', error);
+        alert('حدث خطأ أثناء التصدير');
+    }
+}
+
+// Event Listeners Setup
+function setupEventListeners() {
     // Login/Logout
-    loginBtn.addEventListener('click', login);
-    logoutBtn.addEventListener('click', logout);
+    loginBtn.addEventListener('click', handleLogin);
+    logoutBtn.addEventListener('click', handleLogout);
     passwordInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') login();
+        if (e.key === 'Enter') handleLogin();
     });
-    
-    // Navigation
+
+    // Year Navigation
     yearNavButtons.forEach(btn => {
-        btn.addEventListener('click', () => changeYear(btn.dataset.year));
+        btn.addEventListener('click', () => {
+            currentYear = btn.dataset.year;
+            currentYearTitle.textContent = `السنة الجامعية: ${currentYear}`;
+            loadDataForYear(currentYear);
+        });
     });
-    
+
+    // Page Navigation
     subpageButtons.forEach(btn => {
-        btn.addEventListener('click', () => changeSubpage(btn.dataset.page));
+        btn.addEventListener('click', () => {
+            subpageButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const page = btn.dataset.page;
+            topicsContent.classList.toggle('hidden', page !== 'topics');
+            committeeContent.classList.toggle('hidden', page !== 'committee');
+        });
     });
-    
+
     // Topic Management
     newTopicBtn.addEventListener('click', () => topicModal.classList.remove('hidden'));
     cancelModalBtn.addEventListener('click', () => topicModal.classList.add('hidden'));
-    topicForm.addEventListener('submit', submitTopicForm);
-    
+    topicForm.addEventListener('submit', handleAddTopic);
+
     // Committee Management
-    newCommitteeBtn.addEventListener('click', openCommitteeModal);
+    newCommitteeBtn.addEventListener('click', populateCommitteeForm);
     cancelCommitteeModalBtn.addEventListener('click', () => committeeModal.classList.add('hidden'));
-    committeeForm.addEventListener('submit', submitCommitteeForm);
-    
+    committeeForm.addEventListener('submit', handleAddCommittee);
+
     // Discussant Management
-    manageDiscussantsBtn.addEventListener('click', openDiscussantsModal);
+    manageDiscussantsBtn.addEventListener('click', loadDiscussants);
     closeDiscussantsModalBtn.addEventListener('click', () => discussantsModal.classList.add('hidden'));
-    addDiscussantBtn.addEventListener('click', addNewDiscussant);
-    updateLimitBtn.addEventListener('click', updateDiscussantLimit);
-    
+    addDiscussantBtn.addEventListener('click', handleAddDiscussant);
+    updateLimitBtn.addEventListener('click', handleUpdateDiscussantLimit);
+
     // Excel Downloads
-    downloadExcelBtn.addEventListener('click', downloadAsExcel);
-    downloadCommitteeExcelBtn.addEventListener('click', downloadCommitteesAsExcel);
-});
+    downloadExcelBtn.addEventListener('click', downloadTopicsExcel);
+    downloadCommitteeExcelBtn.addEventListener('click', downloadCommitteesExcel);
+}
+
+// Helper Functions
+async function populateCommitteeForm() {
+    committeeTopicSelect.innerHTML = '<option value="">اختر الموضوع</option>';
+    
+    // Get accepted topics for current year
+    const snapshot = await database.ref(`topics/${currentYear}`).once('value');
+    const topics = snapshot.val() || {};
+    
+    Object.entries(topics).forEach(([id, topic]) => {
+        if (topic.status === 'accepted') {
+            const option = document.createElement('option');
+            option.value = id;
+            option.textContent = `${topic.title} (${topic.supervisor})`;
+            committeeTopicSelect.appendChild(option);
+        }
+    });
+    
+    // Populate discussant dropdowns
+    populateDiscussantDropdowns(window.discussants || {});
+    committeeModal.classList.remove('hidden');
+}
+
+function populateDiscussantDropdowns(discussants) {
+    firstDiscussantSelect.innerHTML = '<option value="">اختر المناقش الأول</option>';
+    secondDiscussantSelect.innerHTML = '<option value="">اختر المناقش الثاني</option>';
+    
+    Object.entries(discussants).forEach(([id, discussant]) => {
+        const option1 = document.createElement('option');
+        option1.value = id;
+        option1.textContent = `${discussant.name} (الحد: ${discussant.maxUsage || 2})`;
+        firstDiscussantSelect.appendChild(option1);
+        
+        const option2 = document.createElement('option');
+        option2.value = id;
+        option2.textContent = `${discussant.name} (الحد: ${discussant.maxUsage || 2})`;
+        secondDiscussantSelect.appendChild(option2);
+    });
+    
+    // Make dropdowns scrollable
+    firstDiscussantSelect.size = 5;
+    secondDiscussantSelect.size = 5;
+}
+
+// Make functions available globally
+window.updateTopicStatus = async function(id, status) {
+    try {
+        await database.ref(`topics/${currentYear}/${id}/status`).set(status);
+    } catch (error) {
+        console.error('Error updating topic status:', error);
+        alert('حدث خطأ أثناء التحديث');
+    }
+};
+
+window.changeTopicProfile = async function(id) {
+    const newProfile = prompt('اختر الملمح الجديد:\n1. متوسط\n2. ثانوي', 'متوسط');
+    
+    if (newProfile && ['متوسط', 'ثانوي'].includes(newProfile)) {
+        try {
+            await database.ref(`topics/${currentYear}/${id}/profile`).set(newProfile);
+        } catch (error) {
+            console.error('Error changing topic profile:', error);
+            alert('حدث خطأ أثناء التحديث');
+        }
+    } else if (newProfile) {
+        alert('الرجاء اختيار "متوسط" أو "ثانوي" فقط');
+    }
+};
