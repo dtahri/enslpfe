@@ -27,35 +27,35 @@ let committees = {
 };
 
 let discussants = [
-"Ã. ÈÑãÖÇä ÇáØíÈ",
-    "Ã. Èä ÚÇÈÏ åÏì ÎÏíÌÉ",
-    "Ã. Èä ãÈÇÑß åÌíÑÉ",
-    "Ã. ÈæÈÑíãÉ ÃÑíÌ",
-    "Ã. ÈæÕÇáÍ áíáì",
-    "Ã. ÈæáäæÇÑ äæÑ ÇáÏíä",
-    "Ã. ÈæåÇáí ÚÈÏ ÇáÈÇŞí",
-    "Ã. ÌÇÈ Çááå Îáİ Çááå",
-    "Ã. ÍÇÌ ÓÚíÏ ÍÓíäÉ",
-    "Ã. ÍÇÌ ÚíÓì ÊæİíŞ",
-    "Ã. ÍãÏí ÚÇÆÔÉ",
-    "Ã. Îäíİí ãÍãÏ Ããíä",
-    "Ã. ÏÍãÇä ÓİíÇä",
-    "Ã. ÑÇíÓí Úáí",
-    "Ã. ÓÑÓŞ ÇáÊÇáíÉ",
-    "Ã. ÔáÛæã ãäÇá",
-    "Ã. ÕÏíŞí ÇáÓÚíÏ",
-    "Ã. Öíİ ÇáŞäÏæÒ",
-    "Ã. ØÇåÑí ÇáÌíáÇáí",
-    "Ã. ØáíÈÉ åÇáÉ",
-    "Ã. ÚæíÓí åÇÌÑ",
-    "Ã. İíáÇáí ÚÈÏ ÇáÓáÇã",
-    "Ã. ŞÇÓãí ÕİíÉ",
-    "Ã. áÈíÖ ÑÖæÇä",
-    "Ã. áÚÑÈí ÇÈÑÇåíã",
-    "Ã. ãÇÓäÉ İÊíÍÉ",
-    "Ã. ãÑÈÇÍ ßãÇá Òíä ÇáÚÇÈÏíä",
-    "Ã. ãÚãÑí ãáíßÉ",
-    "Ã. äÇÌí İÇØãÉ ÇáÒåÑÇÁ"
+"Ø£. Ø¨Ø±Ù…Ø¶Ø§Ù† Ø§Ù„Ø·ÙŠØ¨",
+    "Ø£. Ø¨Ù† Ø¹Ø§Ø¨Ø¯ Ù‡Ø¯Ù‰ Ø®Ø¯ÙŠØ¬Ø©",
+    "Ø£. Ø¨Ù† Ù…Ø¨Ø§Ø±Ùƒ Ù‡Ø¬ÙŠØ±Ø©",
+    "Ø£. Ø¨ÙˆØ¨Ø±ÙŠÙ…Ø© Ø£Ø±ÙŠØ¬",
+    "Ø£. Ø¨ÙˆØµØ§Ù„Ø­ Ù„ÙŠÙ„Ù‰",
+    "Ø£. Ø¨ÙˆÙ„Ù†ÙˆØ§Ø± Ù†ÙˆØ± Ø§Ù„Ø¯ÙŠÙ†",
+    "Ø£. Ø¨ÙˆÙ‡Ø§Ù„ÙŠ Ø¹Ø¨Ø¯ Ø§Ù„Ø¨Ø§Ù‚ÙŠ",
+    "Ø£. Ø¬Ø§Ø¨ Ø§Ù„Ù„Ù‡ Ø®Ù„Ù Ø§Ù„Ù„Ù‡",
+    "Ø£. Ø­Ø§Ø¬ Ø³Ø¹ÙŠØ¯ Ø­Ø³ÙŠÙ†Ø©",
+    "Ø£. Ø­Ø§Ø¬ Ø¹ÙŠØ³Ù‰ ØªÙˆÙÙŠÙ‚",
+    "Ø£. Ø­Ù…Ø¯ÙŠ Ø¹Ø§Ø¦Ø´Ø©",
+    "Ø£. Ø®Ù†ÙŠÙÙŠ Ù…Ø­Ù…Ø¯ Ø£Ù…ÙŠÙ†",
+    "Ø£. Ø¯Ø­Ù…Ø§Ù† Ø³ÙÙŠØ§Ù†",
+    "Ø£. Ø±Ø§ÙŠØ³ÙŠ Ø¹Ù„ÙŠ",
+    "Ø£. Ø³Ø±Ø³Ù‚ Ø§Ù„ØªØ§Ù„ÙŠØ©",
+    "Ø£. Ø´Ù„ØºÙˆÙ… Ù…Ù†Ø§Ù„",
+    "Ø£. ØµØ¯ÙŠÙ‚ÙŠ Ø§Ù„Ø³Ø¹ÙŠØ¯",
+    "Ø£. Ø¶ÙŠÙ Ø§Ù„Ù‚Ù†Ø¯ÙˆØ²",
+    "Ø£. Ø·Ø§Ù‡Ø±ÙŠ Ø§Ù„Ø¬ÙŠÙ„Ø§Ù„ÙŠ",
+    "Ø£. Ø·Ù„ÙŠØ¨Ø© Ù‡Ø§Ù„Ø©",
+    "Ø£. Ø¹ÙˆÙŠØ³ÙŠ Ù‡Ø§Ø¬Ø±",
+    "Ø£. ÙÙŠÙ„Ø§Ù„ÙŠ Ø¹Ø¨Ø¯ Ø§Ù„Ø³Ù„Ø§Ù…",
+    "Ø£. Ù‚Ø§Ø³Ù…ÙŠ ØµÙÙŠØ©",
+    "Ø£. Ù„Ø¨ÙŠØ¶ Ø±Ø¶ÙˆØ§Ù†",
+    "Ø£. Ù„Ø¹Ø±Ø¨ÙŠ Ø§Ø¨Ø±Ø§Ù‡ÙŠÙ…",
+    "Ø£. Ù…Ø§Ø³Ù†Ø© ÙØªÙŠØ­Ø©",
+    "Ø£. Ù…Ø±Ø¨Ø§Ø­ ÙƒÙ…Ø§Ù„ Ø²ÙŠÙ† Ø§Ù„Ø¹Ø§Ø¨Ø¯ÙŠÙ†",
+    "Ø£. Ù…Ø¹Ù…Ø±ÙŠ Ù…Ù„ÙŠÙƒØ©",
+    "Ø£. Ù†Ø§Ø¬ÙŠ ÙØ§Ø·Ù…Ø© Ø§Ù„Ø²Ù‡Ø±Ø§Ø¡"
 ];
 
 let discussantLimits = {};
@@ -152,18 +152,18 @@ function updateDiscussantUsage() {
 // Download Topics as Excel
 function downloadAsExcel() {
     const excelData = topics[currentYear].map(topic => ({
-        'áŞÈ ÇáãÄØÑ': topic.supervisor,
-        'ÇáãæÖæÚ': topic.title,
-        'ÇáãáãÍ': topic.profile,
-        'ÇáÍÇáÉ': topic.status === 'accepted' ? 'ãŞÈæá' : 
-                 topic.status === 'rejected' ? 'ãÄÌá' : 'ŞíÏ ÇáãÑÇÌÚÉ',
-        'ÊÇÑíÎ ÇáÅÖÇİÉ': new Date(topic.timestamp).toLocaleString('ar-EG')
+        'Ù„Ù‚Ø¨ Ø§Ù„Ù…Ø¤Ø·Ø±': topic.supervisor,
+        'Ø§Ù„Ù…ÙˆØ¶ÙˆØ¹': topic.title,
+        'Ø§Ù„Ù…Ù„Ù…Ø­': topic.profile,
+        'Ø§Ù„Ø­Ø§Ù„Ø©': topic.status === 'accepted' ? 'Ù…Ù‚Ø¨ÙˆÙ„' : 
+                 topic.status === 'rejected' ? 'Ù…Ø¤Ø¬Ù„' : 'Ù‚ÙŠØ¯ Ø§Ù„Ù…Ø±Ø§Ø¬Ø¹Ø©',
+        'ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ø¶Ø§ÙØ©': new Date(topic.timestamp).toLocaleString('ar-EG')
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(excelData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'ÇáãæÇÖíÚ');
-    XLSX.writeFile(workbook, `ãæÇÖíÚ_${currentYear}.xlsx`);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Ø§Ù„Ù…ÙˆØ§Ø¶ÙŠØ¹');
+    XLSX.writeFile(workbook, `Ù…ÙˆØ§Ø¶ÙŠØ¹_${currentYear}.xlsx`);
 }
 
 // Download Committees as Excel
@@ -171,18 +171,18 @@ function downloadCommitteesAsExcel() {
     const excelData = committees[currentYear].map(committee => {
         const topicInfo = topics[currentYear].find(t => t.title === committee.topic) || {};
         return {
-            'ÇáãæÖæÚ': committee.topic,
-            'ÇáãäÇŞÔ ÇáÃæá': committee.firstDiscussant,
-            'ÇáãäÇŞÔ ÇáËÇäí': committee.secondDiscussant,
-            'áŞÈ ÇáãÄØÑ': topicInfo.supervisor || 'ÛíÑ ãÚÑæİ',
-            'ÇáãáãÍ': topicInfo.profile || 'ÛíÑ ãÚÑæİ'
+            'Ø§Ù„Ù…ÙˆØ¶ÙˆØ¹': committee.topic,
+            'Ø§Ù„Ù…Ù†Ø§Ù‚Ø´ Ø§Ù„Ø£ÙˆÙ„': committee.firstDiscussant,
+            'Ø§Ù„Ù…Ù†Ø§Ù‚Ø´ Ø§Ù„Ø«Ø§Ù†ÙŠ': committee.secondDiscussant,
+            'Ù„Ù‚Ø¨ Ø§Ù„Ù…Ø¤Ø·Ø±': topicInfo.supervisor || 'ØºÙŠØ± Ù…Ø¹Ø±ÙˆÙ',
+            'Ø§Ù„Ù…Ù„Ù…Ø­': topicInfo.profile || 'ØºÙŠØ± Ù…Ø¹Ø±ÙˆÙ'
         };
     });
 
     const worksheet = XLSX.utils.json_to_sheet(excelData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'áÌÇä ÇáãäÇŞÔÉ');
-    XLSX.writeFile(workbook, `áÌÇä_ÇáãäÇŞÔÉ_${currentYear}.xlsx`);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Ù„Ø¬Ø§Ù† Ø§Ù„Ù…Ù†Ø§Ù‚Ø´Ø©');
+    XLSX.writeFile(workbook, `Ù„Ø¬Ø§Ù†_Ø§Ù„Ù…Ù†Ø§Ù‚Ø´Ø©_${currentYear}.xlsx`);
 }
 
 // Render Topics
@@ -190,7 +190,7 @@ function renderTopics() {
     topicsList.innerHTML = '';
     
     if (topics[currentYear].length === 0) {
-        topicsList.innerHTML = '<p class="no-topics">áÇ ÊæÌÏ ãæÇÖíÚ ãÓÌáÉ ÈÚÏ</p>';
+        topicsList.innerHTML = '<p class="no-topics">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…ÙˆØ§Ø¶ÙŠØ¹ Ù…Ø³Ø¬Ù„Ø© Ø¨Ø¹Ø¯</p>';
         return;
     }
     
@@ -206,7 +206,7 @@ function renderTopics() {
         : topics[currentYear].filter(topic => topic.addedBy === currentUser);
     
     if (userTopics.length === 0) {
-        topicsList.innerHTML = '<p class="no-topics">áÇ ÊæÌÏ ãæÇÖíÚ ãÓÌáÉ áß</p>';
+        topicsList.innerHTML = '<p class="no-topics">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…ÙˆØ§Ø¶ÙŠØ¹ Ù…Ø³Ø¬Ù„Ø© Ù„Ùƒ</p>';
         return;
     }
     
@@ -215,14 +215,14 @@ function renderTopics() {
         topicCard.className = `topic-card ${topic.status}`;
         
         const statusText = {
-            'pending': 'ŞíÏ ÇáãÑÇÌÚÉ',
-            'accepted': 'ãŞÈæá',
-            'rejected': 'ãÄÌá'
+            'pending': 'Ù‚ÙŠØ¯ Ø§Ù„Ù…Ø±Ø§Ø¬Ø¹Ø©',
+            'accepted': 'Ù…Ù‚Ø¨ÙˆÙ„',
+            'rejected': 'Ù…Ø¤Ø¬Ù„'
         }[topic.status];
         
         topicCard.innerHTML = `
             <h3>${topic.title}</h3>
-            <p><strong>ÇáãÄØÑ:</strong> ${topic.supervisor}</p>
+            <p><strong>Ø§Ù„Ù…Ø¤Ø·Ø±:</strong> ${topic.supervisor}</p>
             <div class="topic-meta">
                 <span class="topic-profile">${topic.profile}</span>
                 <span class="topic-status ${topic.status}">${statusText}</span>
@@ -235,7 +235,7 @@ function renderTopics() {
         if (topic.addedBy === currentUser || currentUser === 'RgT2025EnSl') {
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'action-btn delete-btn';
-            deleteBtn.innerHTML = 'ÍĞİ';
+            deleteBtn.innerHTML = 'Ø­Ø°Ù';
             deleteBtn.onclick = () => deleteTopic(topic.addedBy === currentUser ? 
                 topics[currentYear].findIndex(t => t.timestamp === topic.timestamp) : 
                 index);
@@ -246,7 +246,7 @@ function renderTopics() {
             if (topic.status !== 'accepted') {
                 const acceptBtn = document.createElement('button');
                 acceptBtn.className = 'action-btn accept-btn';
-                acceptBtn.innerHTML = '? ãŞÈæá';
+                acceptBtn.innerHTML = '? Ù…Ù‚Ø¨ÙˆÙ„';
                 acceptBtn.onclick = () => updateTopicStatus(index, 'accepted');
                 actionsDiv.appendChild(acceptBtn);
             }
@@ -254,14 +254,14 @@ function renderTopics() {
             if (topic.status !== 'rejected') {
                 const rejectBtn = document.createElement('button');
                 rejectBtn.className = 'action-btn reject-btn';
-                rejectBtn.innerHTML = '? ãÄÌá';
+                rejectBtn.innerHTML = '? Ù…Ø¤Ø¬Ù„';
                 rejectBtn.onclick = () => updateTopicStatus(index, 'rejected');
                 actionsDiv.appendChild(rejectBtn);
             }
             
             const changeProfileBtn = document.createElement('button');
             changeProfileBtn.className = 'action-btn change-profile-btn';
-            changeProfileBtn.innerHTML = 'ÊÛííÑ ÇáãáãÍ';
+            changeProfileBtn.innerHTML = 'ØªØºÙŠÙŠØ± Ø§Ù„Ù…Ù„Ù…Ø­';
             changeProfileBtn.onclick = () => changeTopicProfile(index);
             actionsDiv.appendChild(changeProfileBtn);
         }
@@ -287,7 +287,7 @@ function renderCommittees() {
     }
     
     if (committees[currentYear].length === 0) {
-        committeeList.innerHTML = '<p class="no-topics">áÇ ÊæÌÏ áÌÇä ãäÇŞÔÉ ãÓÌáÉ ÈÚÏ</p>';
+        committeeList.innerHTML = '<p class="no-topics">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù„Ø¬Ø§Ù† Ù…Ù†Ø§Ù‚Ø´Ø© Ù…Ø³Ø¬Ù„Ø© Ø¨Ø¹Ø¯</p>';
         return;
     }
     
@@ -297,7 +297,7 @@ function renderCommittees() {
         : committees[currentYear].filter(committee => committee.addedBy === currentUser);
     
     if (userCommittees.length === 0) {
-        committeeList.innerHTML = '<p class="no-topics">áÇ ÊæÌÏ áÌÇä ãäÇŞÔÉ ãÓÌáÉ áß</p>';
+        committeeList.innerHTML = '<p class="no-topics">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù„Ø¬Ø§Ù† Ù…Ù†Ø§Ù‚Ø´Ø© Ù…Ø³Ø¬Ù„Ø© Ù„Ùƒ</p>';
         return;
     }
     
@@ -310,10 +310,10 @@ function renderCommittees() {
         committeeCard.innerHTML = `
             <h3>${committee.topic}</h3>
             <div class="committee-meta">
-                <p><strong>ÇáãäÇŞÔ ÇáÃæá:</strong> ${committee.firstDiscussant}</p>
-                <p><strong>ÇáãäÇŞÔ ÇáËÇäí:</strong> ${committee.secondDiscussant}</p>
-                <p><strong>ÇáãÄØÑ:</strong> ${topicInfo.supervisor || 'ÛíÑ ãÚÑæİ'}</p>
-                <p><strong>ÇáãáãÍ:</strong> ${topicInfo.profile || 'ÛíÑ ãÚÑæİ'}</p>
+                <p><strong>Ø§Ù„Ù…Ù†Ø§Ù‚Ø´ Ø§Ù„Ø£ÙˆÙ„:</strong> ${committee.firstDiscussant}</p>
+                <p><strong>Ø§Ù„Ù…Ù†Ø§Ù‚Ø´ Ø§Ù„Ø«Ø§Ù†ÙŠ:</strong> ${committee.secondDiscussant}</p>
+                <p><strong>Ø§Ù„Ù…Ø¤Ø·Ø±:</strong> ${topicInfo.supervisor || 'ØºÙŠØ± Ù…Ø¹Ø±ÙˆÙ'}</p>
+                <p><strong>Ø§Ù„Ù…Ù„Ù…Ø­:</strong> ${topicInfo.profile || 'ØºÙŠØ± Ù…Ø¹Ø±ÙˆÙ'}</p>
             </div>
         `;
         
@@ -323,7 +323,7 @@ function renderCommittees() {
         if (committee.addedBy === currentUser || currentUser === 'RgT2025EnSl') {
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'action-btn delete-btn';
-            deleteBtn.innerHTML = 'ÍĞİ';
+            deleteBtn.innerHTML = 'Ø­Ø°Ù';
             deleteBtn.onclick = () => deleteCommittee(index);
             actionsDiv.appendChild(deleteBtn);
         }
@@ -335,7 +335,7 @@ function renderCommittees() {
 
 // Delete Topic
 function deleteTopic(index) {
-    if (confirm('åá ÃäÊ ãÊÃßÏ ãä ÍĞİ åĞÇ ÇáãæÖæÚ¿')) {
+    if (confirm('Ù‡Ù„ Ø£Ù†Øª Ù…ØªØ£ÙƒØ¯ Ù…Ù† Ø­Ø°Ù Ù‡Ø°Ø§ Ø§Ù„Ù…ÙˆØ¶ÙˆØ¹ØŸ')) {
         topics[currentYear].splice(index, 1);
         saveData();
         renderTopics();
@@ -344,7 +344,7 @@ function deleteTopic(index) {
 
 // Delete Committee
 function deleteCommittee(index) {
-    if (confirm('åá ÃäÊ ãÊÃßÏ ãä ÍĞİ åĞå ÇááÌäÉ¿')) {
+    if (confirm('Ù‡Ù„ Ø£Ù†Øª Ù…ØªØ£ÙƒØ¯ Ù…Ù† Ø­Ø°Ù Ù‡Ø°Ù‡ Ø§Ù„Ù„Ø¬Ù†Ø©ØŸ')) {
         // Update discussant usage before deleting
         const committee = committees[currentYear][index];
         discussantUsage[committee.firstDiscussant]--;
@@ -365,21 +365,21 @@ function updateTopicStatus(index, status) {
 
 // Change Topic Profile
 function changeTopicProfile(index) {
-    const newProfile = prompt('ÇÎÊÑ ÇáãáãÍ ÇáÌÏíÏ:\n1. ãÊæÓØ\n2. ËÇäæí', topics[currentYear][index].profile);
+    const newProfile = prompt('Ø§Ø®ØªØ± Ø§Ù„Ù…Ù„Ù…Ø­ Ø§Ù„Ø¬Ø¯ÙŠØ¯:\n1. Ù…ØªÙˆØ³Ø·\n2. Ø«Ø§Ù†ÙˆÙŠ', topics[currentYear][index].profile);
     
-    if (newProfile && ['ãÊæÓØ', 'ËÇäæí'].includes(newProfile)) {
+    if (newProfile && ['Ù…ØªÙˆØ³Ø·', 'Ø«Ø§Ù†ÙˆÙŠ'].includes(newProfile)) {
         topics[currentYear][index].profile = newProfile;
         saveData();
         renderTopics();
     } else if (newProfile) {
-        alert('ÇáÑÌÇÁ ÇÎÊíÇÑ "ãÊæÓØ" Ãæ "ËÇäæí" İŞØ');
+        alert('Ø§Ù„Ø±Ø¬Ø§Ø¡ Ø§Ø®ØªÙŠØ§Ø± "Ù…ØªÙˆØ³Ø·" Ø£Ùˆ "Ø«Ø§Ù†ÙˆÙŠ" ÙÙ‚Ø·');
     }
 }
 
 // Open Committee Modal
 function openCommitteeModal() {
     // Fill topics select with only current user's accepted topics (or all if admin)
-    committeeTopicSelect.innerHTML = '<option value="">ÇÎÊÑ ÇáãæÖæÚ</option>';
+    committeeTopicSelect.innerHTML = '<option value="">Ø§Ø®ØªØ± Ø§Ù„Ù…ÙˆØ¶ÙˆØ¹</option>';
     
     const userTopics = currentUser === 'RgT2025EnSl' 
         ? topics[currentYear].filter(t => t.status === 'accepted')
@@ -400,8 +400,8 @@ function openCommitteeModal() {
 
 // Update Discussant Selects with limits enforcement
 function updateDiscussantSelects() {
-    firstDiscussantSelect.innerHTML = '<option value="">ÇÎÊÑ ÇáãäÇŞÔ ÇáÃæá</option>';
-    secondDiscussantSelect.innerHTML = '<option value="">ÇÎÊÑ ÇáãäÇŞÔ ÇáËÇäí</option>';
+    firstDiscussantSelect.innerHTML = '<option value="">Ø§Ø®ØªØ± Ø§Ù„Ù…Ù†Ø§Ù‚Ø´ Ø§Ù„Ø£ÙˆÙ„</option>';
+    secondDiscussantSelect.innerHTML = '<option value="">Ø§Ø®ØªØ± Ø§Ù„Ù…Ù†Ø§Ù‚Ø´ Ø§Ù„Ø«Ø§Ù†ÙŠ</option>';
     
     discussants.forEach(discussant => {
         const count = discussantUsage[discussant] || 0;
@@ -434,18 +434,18 @@ function updateDiscussantLimit() {
     const newLimit = parseInt(maxDiscussantUsageSelect.value);
     
     if (!discussant) {
-        alert('ÇáÑÌÇÁ ÇÎÊíÇÑ ãäÇŞÔ');
+        alert('Ø§Ù„Ø±Ø¬Ø§Ø¡ Ø§Ø®ØªÙŠØ§Ø± Ù…Ù†Ø§Ù‚Ø´');
         return;
     }
     
     if (isNaN(newLimit) || newLimit < 1 || newLimit > 4) {
-        alert('ÇáÍÏ ÇáÃŞÕì íÌÈ Ãä íßæä Èíä 1 æ 4');
+        alert('Ø§Ù„Ø­Ø¯ Ø§Ù„Ø£Ù‚ØµÙ‰ ÙŠØ¬Ø¨ Ø£Ù† ÙŠÙƒÙˆÙ† Ø¨ÙŠÙ† 1 Ùˆ 4');
         return;
     }
     
     const currentUsage = discussantUsage[discussant] || 0;
     if (currentUsage > newLimit) {
-        alert(`áÇ íãßä ÊÚííä ÇáÍÏ Åáì ${newLimit} áÃä ÇáãäÇŞÔ ãÓÊÎÏã ${currentUsage} ãÑÇÊ ÍÇáíÇğ`);
+        alert(`Ù„Ø§ ÙŠÙ…ÙƒÙ† ØªØ¹ÙŠÙŠÙ† Ø§Ù„Ø­Ø¯ Ø¥Ù„Ù‰ ${newLimit} Ù„Ø£Ù† Ø§Ù„Ù…Ù†Ø§Ù‚Ø´ Ù…Ø³ØªØ®Ø¯Ù… ${currentUsage} Ù…Ø±Ø§Øª Ø­Ø§Ù„ÙŠØ§Ù‹`);
         return;
     }
     
@@ -464,7 +464,7 @@ function openDiscussantsModal() {
         const li = document.createElement('li');
         li.innerHTML = `
             <span>${discussant}</span>
-            <span class="remove-discussant" data-index="${index}">×</span>
+            <span class="remove-discussant" data-index="${index}">Ã—</span>
         `;
         discussantsList.appendChild(li);
     });
@@ -477,11 +477,11 @@ function openDiscussantsModal() {
             
             // Check if discussant is in use
             if (discussantUsage[discussant] > 0) {
-                alert('áÇ íãßä ÍĞİ åĞÇ ÇáãäÇŞÔ áÃäå ãÓÊÎÏã İí áÌÇä ÍÇáíÉ');
+                alert('Ù„Ø§ ÙŠÙ…ÙƒÙ† Ø­Ø°Ù Ù‡Ø°Ø§ Ø§Ù„Ù…Ù†Ø§Ù‚Ø´ Ù„Ø£Ù†Ù‡ Ù…Ø³ØªØ®Ø¯Ù… ÙÙŠ Ù„Ø¬Ø§Ù† Ø­Ø§Ù„ÙŠØ©');
                 return;
             }
             
-            if (confirm(`åá ÃäÊ ãÊÃßÏ ãä ÍĞİ ${discussant}¿`)) {
+            if (confirm(`Ù‡Ù„ Ø£Ù†Øª Ù…ØªØ£ÙƒØ¯ Ù…Ù† Ø­Ø°Ù ${discussant}ØŸ`)) {
                 discussants.splice(index, 1);
                 delete discussantLimits[discussant];
                 saveData();
@@ -491,7 +491,7 @@ function openDiscussantsModal() {
     });
     
     // Populate discussant limit controls
-    discussantToLimitSelect.innerHTML = '<option value="">ÇÎÊÑ ÇáãäÇŞÔ</option>';
+    discussantToLimitSelect.innerHTML = '<option value="">Ø§Ø®ØªØ± Ø§Ù„Ù…Ù†Ø§Ù‚Ø´</option>';
     discussants.forEach(discussant => {
         const option = document.createElement('option');
         option.value = discussant;
@@ -519,12 +519,12 @@ function addNewDiscussant() {
     const name = newDiscussantInput.value.trim();
     
     if (!name) {
-        alert('ÇáÑÌÇÁ ÅÏÎÇá ÇÓã ÇáãäÇŞÔ');
+        alert('Ø§Ù„Ø±Ø¬Ø§Ø¡ Ø¥Ø¯Ø®Ø§Ù„ Ø§Ø³Ù… Ø§Ù„Ù…Ù†Ø§Ù‚Ø´');
         return;
     }
     
     if (discussants.includes(name)) {
-        alert('åĞÇ ÇáãäÇŞÔ ãæÌæÏ ÈÇáİÚá!');
+        alert('Ù‡Ø°Ø§ Ø§Ù„Ù…Ù†Ø§Ù‚Ø´ Ù…ÙˆØ¬ÙˆØ¯ Ø¨Ø§Ù„ÙØ¹Ù„!');
         return;
     }
     
@@ -541,18 +541,18 @@ function updateDiscussantLimit() {
     const newLimit = parseInt(maxDiscussantUsageSelect.value);
     
     if (!discussant) {
-        alert('ÇáÑÌÇÁ ÇÎÊíÇÑ ãäÇŞÔ');
+        alert('Ø§Ù„Ø±Ø¬Ø§Ø¡ Ø§Ø®ØªÙŠØ§Ø± Ù…Ù†Ø§Ù‚Ø´');
         return;
     }
     
     if (isNaN(newLimit) || newLimit < 1 || newLimit > 4) {
-        alert('ÇáÍÏ ÇáÃŞÕì íÌÈ Ãä íßæä Èíä 1 æ 4');
+        alert('Ø§Ù„Ø­Ø¯ Ø§Ù„Ø£Ù‚ØµÙ‰ ÙŠØ¬Ø¨ Ø£Ù† ÙŠÙƒÙˆÙ† Ø¨ÙŠÙ† 1 Ùˆ 4');
         return;
     }
     
     const currentUsage = discussantUsage[discussant] || 0;
     if (currentUsage > newLimit) {
-        alert(`áÇ íãßä ÊÚííä ÇáÍÏ Åáì ${newLimit} áÃä ÇáãäÇŞÔ ãÓÊÎÏã ${currentUsage} ãÑÇÊ ÍÇáíÇğ`);
+        alert(`Ù„Ø§ ÙŠÙ…ÙƒÙ† ØªØ¹ÙŠÙŠÙ† Ø§Ù„Ø­Ø¯ Ø¥Ù„Ù‰ ${newLimit} Ù„Ø£Ù† Ø§Ù„Ù…Ù†Ø§Ù‚Ø´ Ù…Ø³ØªØ®Ø¯Ù… ${currentUsage} Ù…Ø±Ø§Øª Ø­Ø§Ù„ÙŠØ§Ù‹`);
         return;
     }
     
@@ -570,7 +570,7 @@ function submitTopicForm(e) {
     const profile = topicProfileSelect.value;
     
     if (!supervisor || !title || !profile) {
-        alert('ÇáÑÌÇÁ ãáÁ ÌãíÚ ÇáÍŞæá ÇáãØáæÈÉ');
+        alert('Ø§Ù„Ø±Ø¬Ø§Ø¡ Ù…Ù„Ø¡ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ„ Ø§Ù„Ù…Ø·Ù„ÙˆØ¨Ø©');
         return;
     }
     
@@ -599,12 +599,12 @@ function submitCommitteeForm(e) {
     const secondDiscussant = secondDiscussantSelect.value;
     
     if (!topic || !firstDiscussant || !secondDiscussant) {
-        alert('ÇáÑÌÇÁ ãáÁ ÌãíÚ ÇáÍŞæá ÇáãØáæÈÉ');
+        alert('Ø§Ù„Ø±Ø¬Ø§Ø¡ Ù…Ù„Ø¡ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ„ Ø§Ù„Ù…Ø·Ù„ÙˆØ¨Ø©');
         return;
     }
     
     if (firstDiscussant === secondDiscussant) {
-        alert('áÇ íãßä ÇÎÊíÇÑ äİÓ ÇáãäÇŞÔ ãÑÊíä');
+        alert('Ù„Ø§ ÙŠÙ…ÙƒÙ† Ø§Ø®ØªÙŠØ§Ø± Ù†ÙØ³ Ø§Ù„Ù…Ù†Ø§Ù‚Ø´ Ù…Ø±ØªÙŠÙ†');
         return;
     }
     
@@ -631,7 +631,7 @@ function submitCommitteeForm(e) {
 // Change Year
 function changeYear(year) {
     currentYear = year;
-    currentYearTitle.textContent = `ÇáÓäÉ ÇáÌÇãÚíÉ: ${year}`;
+    currentYearTitle.textContent = `Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø¬Ø§Ù…Ø¹ÙŠØ©: ${year}`;
     
     // Update active year button
     yearNavButtons.forEach(btn => {
@@ -682,7 +682,7 @@ function login() {
         loginError.textContent = '';
         passwordInput.value = '';
     } else {
-        loginError.textContent = 'ßáãÉ ÇáãÑæÑ ÛíÑ ÕÍíÍÉ';
+        loginError.textContent = 'ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± ØºÙŠØ± ØµØ­ÙŠØ­Ø©';
     }
 }
 
