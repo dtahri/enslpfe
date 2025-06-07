@@ -110,8 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Firebase Auth State Listener
 function checkAuthState() {
+  console.log("Setting up auth state listener...");
     auth.onAuthStateChanged(user => {
+      console.log("Auth state changed:", user);
         if (user) {
+          console.log("User signed in:", user.email);
             // User is signed in
             getUserRole(user.email).then(role => {
                 currentUser = {
@@ -125,6 +128,7 @@ function checkAuthState() {
                 loadInitialData();
             });
         } else {
+          console.log("No user signed in");
             // No user is signed in
             currentUser = null;
             loginPage.classList.remove('hidden');
@@ -200,11 +204,40 @@ async function handleLogin() {
     
     try {
         loadingSpinner.classList.remove('hidden');
-        const userCredential = await auth.signInWithEmailAndPassword(email, password);
         loginError.textContent = '';
+        
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        
+        // Get user role from database
+        const sanitizedEmail = email.replace('.', '_');
+        const roleSnapshot = await database.ref('users/' + sanitizedEmail).once('value');
+        const role = roleSnapshot.val()?.role || 'user';
+        
+        currentUser = {
+            uid: user.uid,
+            email: user.email,
+            role: role
+        };
+        
+        loginPage.classList.add('hidden');
+        mainContent.classList.remove('hidden');
+        loadInitialData();
+        
     } catch (error) {
         console.error('Login error:', error);
-        loginError.textContent = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+        
+        // Specific error messages
+        if (error.code === 'auth/user-not-found') {
+            loginError.textContent = 'البريد الإلكتروني غير مسجل';
+        } else if (error.code === 'auth/wrong-password') {
+            loginError.textContent = 'كلمة المرور غير صحيحة';
+        } else if (error.code === 'auth/invalid-email') {
+            loginError.textContent = 'بريد إلكتروني غير صالح';
+        } else {
+            loginError.textContent = 'حدث خطأ أثناء تسجيل الدخول';
+        }
+        
     } finally {
         loadingSpinner.classList.add('hidden');
     }
