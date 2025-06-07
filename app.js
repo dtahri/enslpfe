@@ -8,11 +8,36 @@ apiKey: "AIzaSyCC36epRow_C0pILQdmHZQxW-Qvtu-1U2k",
   messagingSenderId: "830633315062",
   appId: "1:830633315062:web:7036091381389edf7e7ad7"
 };
+firebase.auth().useDeviceLanguage();
+try {
+  firebase.auth().signOut();
+} catch (e) {}
 
 // Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
+// Initialize Firebase
+let app;
+try {
+  app = firebase.initializeApp(firebaseConfig);
+} catch (error) {
+  app = firebase.app();
+}
 const database = firebase.database();
 const auth = firebase.auth();
+
+// Add this to check enabled auth methods
+firebase.auth().fetchSignInMethodsForEmail("d.tahri@lagh-univ.dz")
+  .then(methods => console.log("Sign-in methods:", methods))
+  .catch(error => console.error("Error checking methods:", error));
+
+// Test Firebase connection
+console.log("Testing Firebase connection...");
+firebase.database().ref('.info/connected').on('value', (snapshot) => {
+  if (snapshot.val() === true) {
+    console.log("Connected to Firebase");
+  } else {
+    console.log("NOT connected to Firebase");
+  }
+});
 
 // User credentials (email/password combinations)
 const userCredentials = [
@@ -194,53 +219,66 @@ async function initializeDiscussants() {
 
 // Authentication Handler
 async function handleLogin() {
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  
+  console.log("Login attempt with:", email, password);
+
+  if (!email || !password) {
+    const error = "الرجاء إدخال البريد الإلكتروني وكلمة المرور";
+    console.log(error);
+    document.getElementById('login-error').textContent = error;
+    return;
+  }
+
+  try {
+    console.log("Attempting sign in...");
+    const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+    console.log("Login success:", userCredential.user);
     
-    if (!email || !password) {
-        loginError.textContent = 'الرجاء إدخال البريد الإلكتروني وكلمة المرور';
-        return;
+    // Verify user exists in database
+    const sanitizedEmail = email.replace('.', '_');
+    const userRef = firebase.database().ref('users/' + sanitizedEmail);
+    const snapshot = await userRef.once('value');
+    
+    if (!snapshot.exists()) {
+      throw new Error("User exists in Auth but not in Database");
     }
     
-    try {
-        loadingSpinner.classList.remove('hidden');
-        loginError.textContent = '';
-        
-        const userCredential = await auth.signInWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-        
-        // Get user role from database
-        const sanitizedEmail = email.replace('.', '_');
-        const roleSnapshot = await database.ref('users/' + sanitizedEmail).once('value');
-        const role = roleSnapshot.val()?.role || 'user';
-        
-        currentUser = {
-            uid: user.uid,
-            email: user.email,
-            role: role
-        };
-        
-        loginPage.classList.add('hidden');
-        mainContent.classList.remove('hidden');
-        loadInitialData();
-        
-    } catch (error) {
-        console.error('Login error:', error);
-        
-        // Specific error messages
-        if (error.code === 'auth/user-not-found') {
-            loginError.textContent = 'البريد الإلكتروني غير مسجل';
-        } else if (error.code === 'auth/wrong-password') {
-            loginError.textContent = 'كلمة المرور غير صحيحة';
-        } else if (error.code === 'auth/invalid-email') {
-            loginError.textContent = 'بريد إلكتروني غير صالح';
-        } else {
-            loginError.textContent = 'حدث خطأ أثناء تسجيل الدخول';
-        }
-        
-    } finally {
-        loadingSpinner.classList.add('hidden');
+    const userData = snapshot.val();
+    console.log("User data:", userData);
+    
+    currentUser = {
+      uid: userCredential.user.uid,
+      email: userCredential.user.email,
+      role: userData.role || 'user'
+    };
+    
+    document.getElementById('login-page').classList.add('hidden');
+    document.getElementById('main-content').classList.remove('hidden');
+    loadInitialData();
+    
+  } catch (error) {
+    console.error("Login failed:", error);
+    let errorMessage = "حدث خطأ أثناء تسجيل الدخول";
+    
+    switch(error.code) {
+      case 'auth/user-not-found':
+        errorMessage = "البريد الإلكتروني غير مسجل";
+        break;
+      case 'auth/wrong-password':
+        errorMessage = "كلمة المرور غير صحيحة";
+        break;
+      case 'auth/invalid-email':
+        errorMessage = "بريد إلكتروني غير صالح";
+        break;
+      case 'auth/too-many-requests':
+        errorMessage = "تم تجاوز عدد المحاولات، يرجى المحاولة لاحقاً";
+        break;
     }
+    
+    document.getElementById('login-error').textContent = errorMessage;
+  }
 }
 
 // Logout Handler
