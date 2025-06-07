@@ -1,12 +1,13 @@
 // Firebase configuration - REPLACE WITH YOUR ACTUAL CONFIG
 const firebaseConfig = {
-            apiKey: "AIzaSyCC36epRow_C0pILQdmHZQxW-Qvtu-1U2k",
-            authDomain: "ensl-7118d.firebaseapp.com",
-            databaseURL: "https://ensl-7118d-default-rtdb.firebaseio.com",
-            projectId: "ensl-7118d",
-            storageBucket: "ensl-7118d.firebasestorage.app",
-            messagingSenderId: "830633315062",
-            appId: "1:830633315062:web:7036091381389edf7e7ad7"
+apiKey: "AIzaSyCC36epRow_C0pILQdmHZQxW-Qvtu-1U2k",
+  authDomain: "ensl-7118d.firebaseapp.com",
+  databaseURL: "https://ensl-7118d-default-rtdb.firebaseio.com",
+  projectId: "ensl-7118d",
+  storageBucket: "ensl-7118d.firebasestorage.app",
+  messagingSenderId: "830633315062",
+  appId: "1:830633315062:web:7036091381389edf7e7ad7",
+  measurementId: "G-2EL41ZJNFP"
 };
 
 // Initialize Firebase
@@ -14,15 +15,58 @@ const app = firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 
+// User credentials (email/password combinations)
+const userCredentials = [
+    { email: "d.tahri@lagh-univ.dz", password: "bio&19905", role: "admin" },
+    { email: "user1@example.com", password: "A3$dF", role: "user" },
+    { email: "user2@example.com", password: "zX#7k", role: "user" },
+    // Add all 45 users here following the same pattern
+    { email: "user45@example.com", password: "S#o4j", role: "user" }
+];
+
+// Initial discussants list
+const initialDiscussants = [
+    "أ. برمضان الطيب",
+    "أ. بن عابد هدى خديجة",
+    "أ. بن مبارك هجيرة",
+    "أ. بوبريمة أريج",
+    "أ. بوصالح ليلى",
+    "أ. بولنوار نور الدين",
+    "أ. بوهالي عبد الباقي",
+    "أ. جاب الله خلف الله",
+    "أ. حاج سعيد حسينة",
+    "أ. حاج عيسى توفيق",
+    "أ. حمدي عائشة",
+    "أ. خنيفي محمد أمين",
+    "أ. دحمان سفيان",
+    "أ. رايسي علي",
+    "أ. سرسق التالية",
+    "أ. شلغوم منال",
+    "أ. صديقي السعيد",
+    "أ. ضيف القندوز",
+    "أ. طاهري الجيلالي",
+    "أ. طليبة هالة",
+    "أ. عويسي هاجر",
+    "أ. فيلالي عبد السلام",
+    "أ. قاسمي صفية",
+    "أ. لبيض رضوان",
+    "أ. لعربي ابراهيم",
+    "أ. ماسنة فتيحة",
+    "أ. مرباح كمال زين العابدين",
+    "أ. معمري مليكة",
+    "أ. ناجي فاطمة الزهراء"
+];
+
 // State variables
 let currentUser = null;
-let currentYear = '2025';
+let currentYear = new Date().getFullYear().toString();
 
 // DOM Elements
 const loginPage = document.getElementById('login-page');
 const mainContent = document.getElementById('main-content');
 const loginBtn = document.getElementById('login-btn');
 const logoutBtn = document.getElementById('logout-btn');
+const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 const loginError = document.getElementById('login-error');
 const currentYearTitle = document.getElementById('current-year');
@@ -57,6 +101,7 @@ const updateLimitBtn = document.getElementById('update-limit-btn');
 const supervisorInput = document.getElementById('supervisor-name');
 const topicTitleInput = document.getElementById('topic-title');
 const topicProfileSelect = document.getElementById('topic-profile');
+const loadingSpinner = document.getElementById('loading-spinner');
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
@@ -69,10 +114,17 @@ function checkAuthState() {
     auth.onAuthStateChanged(user => {
         if (user) {
             // User is signed in
-            currentUser = user.uid;
-            loginPage.classList.add('hidden');
-            mainContent.classList.remove('hidden');
-            loadInitialData();
+            getUserRole(user.email).then(role => {
+                currentUser = {
+                    uid: user.uid,
+                    email: user.email,
+                    role: role
+                };
+                
+                loginPage.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                loadInitialData();
+            });
         } else {
             // No user is signed in
             currentUser = null;
@@ -82,22 +134,80 @@ function checkAuthState() {
     });
 }
 
+// Get user role from database
+async function getUserRole(email) {
+    const sanitizedEmail = email.replace('.', '_');
+    const snapshot = await database.ref('users/' + sanitizedEmail).once('value');
+    return snapshot.val()?.role || 'user';
+}
+
+// Initialize all users (run this once)
+async function initializeUsers() {
+    try {
+        for (const cred of userCredentials) {
+            await auth.createUserWithEmailAndPassword(cred.email, cred.password)
+                .then(() => {
+                    // Save user role to database
+                    const sanitizedEmail = cred.email.replace('.', '_');
+                    database.ref('users/' + sanitizedEmail).set({
+                        role: cred.role
+                    });
+                })
+                .catch(error => {
+                    if (error.code === 'auth/email-already-in-use') {
+                        console.log('User already exists:', cred.email);
+                    } else {
+                        console.error('Error creating user:', error);
+                    }
+                });
+        }
+        console.log('All users initialized successfully');
+    } catch (error) {
+        console.error('Error initializing users:', error);
+    }
+}
+
+// Initialize discussants (run this once)
+async function initializeDiscussants() {
+    try {
+        const discussantsRef = database.ref('discussants');
+        const discussants = {};
+        
+        initialDiscussants.forEach(name => {
+            const id = name.replace(/\s+/g, '_');
+            discussants[id] = {
+                name: name,
+                maxUsage: 3,
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            };
+        });
+        
+        await discussantsRef.set(discussants);
+        console.log('Discussants initialized successfully');
+    } catch (error) {
+        console.error('Error initializing discussants:', error);
+    }
+}
+
 // Authentication Handler
 async function handleLogin() {
+    const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
     
-    if (!password) {
-        loginError.textContent = 'الرجاء إدخال كلمة المرور';
+    if (!email || !password) {
+        loginError.textContent = 'الرجاء إدخال البريد الإلكتروني وكلمة المرور';
         return;
     }
     
     try {
-        // Use the admin email you registered in Firebase Console
-        await auth.signInWithEmailAndPassword('d.tahri@lagh-univ.dz', bio&19905);
+        loadingSpinner.classList.remove('hidden');
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
         loginError.textContent = '';
     } catch (error) {
         console.error('Login error:', error);
-        loginError.textContent = 'كلمة المرور غير صحيحة';
+        loginError.textContent = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+    } finally {
+        loadingSpinner.classList.add('hidden');
     }
 }
 
@@ -106,17 +216,30 @@ function handleLogout() {
     auth.signOut();
 }
 
+// Check if user is admin
+function isAdmin() {
+    return currentUser && currentUser.role === 'admin';
+}
+
 // Data Loading Functions
 function loadInitialData() {
-    currentYearTitle.textContent = `السنة الجامعية: ${currentYear}`;
+    currentYearTitle.textContent = `نظام إدارة مواضيع التخرج - ${currentYear}`;
     loadDataForYear(currentYear);
 }
 
 function loadDataForYear(year) {
+    loadingSpinner.classList.remove('hidden');
+    
     // Load topics
     database.ref(`topics/${year}`).on('value', (snapshot) => {
         const topics = snapshot.val() || {};
         renderTopics(topics);
+        
+        if (document.getElementById('committee-modal').classList.contains('hidden') === false) {
+            populateCommitteeForm();
+        }
+        
+        loadingSpinner.classList.add('hidden');
     });
     
     // Load committees
@@ -130,12 +253,7 @@ function loadDataForYear(year) {
         const discussants = snapshot.val() || {};
         window.discussants = discussants;
         
-        // Update UI elements if they're open
-        if (!committeeModal.classList.contains('hidden')) {
-            populateCommitteeForm();
-        }
-        
-        if (!discussantsModal.classList.contains('hidden')) {
+        if (document.getElementById('discussants-modal').classList.contains('hidden') === false) {
             renderDiscussantsList(discussants);
         }
     });
@@ -147,10 +265,26 @@ function renderTopics(topics) {
     
     if (Object.keys(topics).length === 0) {
         topicsList.innerHTML = '<p class="no-topics">لا توجد مواضيع مسجلة بعد</p>';
+        downloadExcelBtn.classList.add('hidden');
         return;
     }
     
-    Object.entries(topics).forEach(([id, topic]) => {
+    if (isAdmin()) {
+        downloadExcelBtn.classList.remove('hidden');
+    } else {
+        downloadExcelBtn.classList.add('hidden');
+    }
+    
+    // Filter topics to show only current user's topics (unless admin)
+    const userTopics = isAdmin() ? topics : 
+        Object.fromEntries(Object.entries(topics).filter(([_, topic]) => topic.addedBy === currentUser.email));
+    
+    if (Object.keys(userTopics).length === 0) {
+        topicsList.innerHTML = '<p class="no-topics">لا توجد مواضيع مسجلة لك</p>';
+        return;
+    }
+    
+    Object.entries(userTopics).forEach(([id, topic]) => {
         const topicCard = document.createElement('div');
         topicCard.className = `topic-card ${topic.status}`;
         
@@ -169,7 +303,7 @@ function renderTopics(topics) {
             </div>
             <div class="topic-actions">
                 <button class="action-btn delete-btn" onclick="deleteTopic('${id}')">حذف</button>
-                ${currentUser === 'admin' ? `
+                ${isAdmin() ? `
                 <button class="action-btn accept-btn" onclick="updateTopicStatus('${id}', 'accepted')">قبول</button>
                 <button class="action-btn reject-btn" onclick="updateTopicStatus('${id}', 'rejected')">تأجيل</button>
                 <button class="action-btn change-profile-btn" onclick="changeTopicProfile('${id}')">تغيير الملمح</button>
@@ -186,15 +320,34 @@ function renderCommittees(committees) {
     
     if (Object.keys(committees).length === 0) {
         committeeList.innerHTML = '<p class="no-topics">لا توجد لجان مناقشة مسجلة بعد</p>';
+        downloadCommitteeExcelBtn.classList.add('hidden');
+        manageDiscussantsBtn.classList.add('hidden');
         return;
     }
     
-    Object.entries(committees).forEach(([id, committee]) => {
+    if (isAdmin()) {
+        downloadCommitteeExcelBtn.classList.remove('hidden');
+        manageDiscussantsBtn.classList.remove('hidden');
+    } else {
+        downloadCommitteeExcelBtn.classList.add('hidden');
+        manageDiscussantsBtn.classList.add('hidden');
+    }
+    
+    // Filter committees to show only current user's committees (unless admin)
+    const userCommittees = isAdmin() ? committees : 
+        Object.fromEntries(Object.entries(committees).filter(([_, committee]) => committee.addedBy === currentUser.email));
+    
+    if (Object.keys(userCommittees).length === 0) {
+        committeeList.innerHTML = '<p class="no-topics">لا توجد لجان مناقشة مسجلة لك</p>';
+        return;
+    }
+    
+    Object.entries(userCommittees).forEach(([id, committee]) => {
         const committeeCard = document.createElement('div');
         committeeCard.className = 'committee-card';
         
         committeeCard.innerHTML = `
-            <h3>${committee.topic}</h3>
+            <h3>${committee.topicTitle}</h3>
             <div class="committee-meta">
                 <p><strong>المناقش الأول:</strong> ${committee.firstDiscussant}</p>
                 <p><strong>المناقش الثاني:</strong> ${committee.secondDiscussant}</p>
@@ -222,12 +375,14 @@ async function handleAddTopic(e) {
     }
     
     try {
+        loadingSpinner.classList.remove('hidden');
+        
         const newTopic = {
             supervisor,
             title,
             profile,
             status: 'pending',
-            addedBy: currentUser,
+            addedBy: currentUser.email,
             createdAt: firebase.database.ServerValue.TIMESTAMP
         };
         
@@ -238,6 +393,8 @@ async function handleAddTopic(e) {
     } catch (error) {
         console.error('Error adding topic:', error);
         alert('حدث خطأ أثناء إضافة الموضوع');
+    } finally {
+        loadingSpinner.classList.add('hidden');
     }
 }
 
@@ -259,6 +416,8 @@ async function handleAddCommittee(e) {
     }
     
     try {
+        loadingSpinner.classList.remove('hidden');
+        
         // Get topic and discussant details
         const topicSnapshot = await database.ref(`topics/${currentYear}/${topicId}`).once('value');
         const topic = topicSnapshot.val();
@@ -277,7 +436,7 @@ async function handleAddCommittee(e) {
             firstDiscussant: firstDiscussant.name,
             secondDiscussantId,
             secondDiscussant: secondDiscussant.name,
-            addedBy: currentUser,
+            addedBy: currentUser.email,
             createdAt: firebase.database.ServerValue.TIMESTAMP
         };
         
@@ -288,14 +447,24 @@ async function handleAddCommittee(e) {
     } catch (error) {
         console.error('Error adding committee:', error);
         alert('حدث خطأ أثناء إضافة اللجنة');
+    } finally {
+        loadingSpinner.classList.add('hidden');
     }
 }
 
 // Discussant Management
 async function loadDiscussants() {
-    const snapshot = await database.ref('discussants').once('value');
-    const discussants = snapshot.val() || {};
-    renderDiscussantsList(discussants);
+    try {
+        loadingSpinner.classList.remove('hidden');
+        const snapshot = await database.ref('discussants').once('value');
+        const discussants = snapshot.val() || {};
+        renderDiscussantsList(discussants);
+    } catch (error) {
+        console.error('Error loading discussants:', error);
+        alert('حدث خطأ أثناء تحميل قائمة المناقشين');
+    } finally {
+        loadingSpinner.classList.add('hidden');
+    }
 }
 
 function renderDiscussantsList(discussants) {
@@ -328,17 +497,35 @@ async function handleAddDiscussant() {
     }
     
     try {
+        loadingSpinner.classList.remove('hidden');
+        
+        // Check if discussant already exists
+        const existingDiscussants = Object.values(window.discussants || {}).map(d => d.name);
+        if (existingDiscussants.includes(name)) {
+            alert('هذا المناقش موجود بالفعل!');
+            return;
+        }
+        
         const newDiscussant = {
             name,
             maxUsage: 2, // Default limit
             createdAt: firebase.database.ServerValue.TIMESTAMP
         };
         
-        await database.ref('discussants').push(newDiscussant);
+        const newDiscussantRef = await database.ref('discussants').push(newDiscussant);
         newDiscussantInput.value = '';
+        
+        // Update local discussants object
+        window.discussants = window.discussants || {};
+        window.discussants[newDiscussantRef.key] = newDiscussant;
+        
+        // Update the UI
+        renderDiscussantsList(window.discussants);
     } catch (error) {
         console.error('Error adding discussant:', error);
         alert('حدث خطأ أثناء إضافة المناقش');
+    } finally {
+        loadingSpinner.classList.add('hidden');
     }
 }
 
@@ -357,34 +544,51 @@ async function handleUpdateDiscussantLimit() {
     }
     
     try {
+        loadingSpinner.classList.remove('hidden');
         await database.ref(`discussants/${discussantId}/maxUsage`).set(maxUsage);
         alert('تم تحديث الحد الأقصى بنجاح');
+        
+        // Update local discussants object
+        if (window.discussants && window.discussants[discussantId]) {
+            window.discussants[discussantId].maxUsage = maxUsage;
+        }
+        
+        // Update the UI
+        renderDiscussantsList(window.discussants);
     } catch (error) {
         console.error('Error updating discussant limit:', error);
         alert('حدث خطأ أثناء التحديث');
+    } finally {
+        loadingSpinner.classList.add('hidden');
     }
 }
 
 // Delete Functions
 window.deleteTopic = async function(id) {
-    if (confirm('هل أنت متأكد من حذف هذا الموضوع؟')) {
-        try {
-            await database.ref(`topics/${currentYear}/${id}`).remove();
-        } catch (error) {
-            console.error('Error deleting topic:', error);
-            alert('حدث خطأ أثناء الحذف');
-        }
+    if (!confirm('هل أنت متأكد من حذف هذا الموضوع؟')) return;
+    
+    try {
+        loadingSpinner.classList.remove('hidden');
+        await database.ref(`topics/${currentYear}/${id}`).remove();
+    } catch (error) {
+        console.error('Error deleting topic:', error);
+        alert('حدث خطأ أثناء الحذف');
+    } finally {
+        loadingSpinner.classList.add('hidden');
     }
 };
 
 window.deleteCommittee = async function(id) {
-    if (confirm('هل أنت متأكد من حذف هذه اللجنة؟')) {
-        try {
-            await database.ref(`committees/${currentYear}/${id}`).remove();
-        } catch (error) {
-            console.error('Error deleting committee:', error);
-            alert('حدث خطأ أثناء الحذف');
-        }
+    if (!confirm('هل أنت متأكد من حذف هذه اللجنة؟')) return;
+    
+    try {
+        loadingSpinner.classList.remove('hidden');
+        await database.ref(`committees/${currentYear}/${id}`).remove();
+    } catch (error) {
+        console.error('Error deleting committee:', error);
+        alert('حدث خطأ أثناء الحذف');
+    } finally {
+        loadingSpinner.classList.add('hidden');
     }
 };
 
@@ -392,6 +596,8 @@ window.deleteDiscussant = async function(id) {
     if (!confirm('هل أنت متأكد من حذف هذا المناقش؟ سيتم حذفه من جميع اللجان.')) return;
     
     try {
+        loadingSpinner.classList.remove('hidden');
+        
         // First check if discussant is used in any committees
         const committeesSnapshot = await database.ref(`committees/${currentYear}`).once('value');
         const committees = committeesSnapshot.val() || {};
@@ -409,15 +615,27 @@ window.deleteDiscussant = async function(id) {
         }
         
         await database.ref(`discussants/${id}`).remove();
+        
+        // Update local discussants object
+        if (window.discussants && window.discussants[id]) {
+            delete window.discussants[id];
+        }
+        
+        // Update the UI
+        renderDiscussantsList(window.discussants || {});
     } catch (error) {
         console.error('Error deleting discussant:', error);
         alert('حدث خطأ أثناء الحذف');
+    } finally {
+        loadingSpinner.classList.add('hidden');
     }
 };
 
 // Excel Export Functions
 async function downloadTopicsExcel() {
     try {
+        loadingSpinner.classList.remove('hidden');
+        
         const snapshot = await database.ref(`topics/${currentYear}`).once('value');
         const topics = snapshot.val() || {};
         
@@ -437,11 +655,15 @@ async function downloadTopicsExcel() {
     } catch (error) {
         console.error('Error exporting to Excel:', error);
         alert('حدث خطأ أثناء التصدير');
+    } finally {
+        loadingSpinner.classList.add('hidden');
     }
 }
 
 async function downloadCommitteesExcel() {
     try {
+        loadingSpinner.classList.remove('hidden');
+        
         const topicsSnapshot = await database.ref(`topics/${currentYear}`).once('value');
         const topics = topicsSnapshot.val() || {};
         
@@ -466,80 +688,39 @@ async function downloadCommitteesExcel() {
     } catch (error) {
         console.error('Error exporting to Excel:', error);
         alert('حدث خطأ أثناء التصدير');
+    } finally {
+        loadingSpinner.classList.add('hidden');
     }
-}
-
-// Event Listeners Setup
-function setupEventListeners() {
-    // Login/Logout
-    loginBtn.addEventListener('click', handleLogin);
-    logoutBtn.addEventListener('click', handleLogout);
-    passwordInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleLogin();
-    });
-
-    // Year Navigation
-    yearNavButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            currentYear = btn.dataset.year;
-            currentYearTitle.textContent = `السنة الجامعية: ${currentYear}`;
-            loadDataForYear(currentYear);
-        });
-    });
-
-    // Page Navigation
-    subpageButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            subpageButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            const page = btn.dataset.page;
-            topicsContent.classList.toggle('hidden', page !== 'topics');
-            committeeContent.classList.toggle('hidden', page !== 'committee');
-        });
-    });
-
-    // Topic Management
-    newTopicBtn.addEventListener('click', () => topicModal.classList.remove('hidden'));
-    cancelModalBtn.addEventListener('click', () => topicModal.classList.add('hidden'));
-    topicForm.addEventListener('submit', handleAddTopic);
-
-    // Committee Management
-    newCommitteeBtn.addEventListener('click', populateCommitteeForm);
-    cancelCommitteeModalBtn.addEventListener('click', () => committeeModal.classList.add('hidden'));
-    committeeForm.addEventListener('submit', handleAddCommittee);
-
-    // Discussant Management
-    manageDiscussantsBtn.addEventListener('click', loadDiscussants);
-    closeDiscussantsModalBtn.addEventListener('click', () => discussantsModal.classList.add('hidden'));
-    addDiscussantBtn.addEventListener('click', handleAddDiscussant);
-    updateLimitBtn.addEventListener('click', handleUpdateDiscussantLimit);
-
-    // Excel Downloads
-    downloadExcelBtn.addEventListener('click', downloadTopicsExcel);
-    downloadCommitteeExcelBtn.addEventListener('click', downloadCommitteesExcel);
 }
 
 // Helper Functions
 async function populateCommitteeForm() {
-    committeeTopicSelect.innerHTML = '<option value="">اختر الموضوع</option>';
-    
-    // Get accepted topics for current year
-    const snapshot = await database.ref(`topics/${currentYear}`).once('value');
-    const topics = snapshot.val() || {};
-    
-    Object.entries(topics).forEach(([id, topic]) => {
-        if (topic.status === 'accepted') {
-            const option = document.createElement('option');
-            option.value = id;
-            option.textContent = `${topic.title} (${topic.supervisor})`;
-            committeeTopicSelect.appendChild(option);
-        }
-    });
-    
-    // Populate discussant dropdowns
-    populateDiscussantDropdowns(window.discussants || {});
-    committeeModal.classList.remove('hidden');
+    try {
+        loadingSpinner.classList.remove('hidden');
+        committeeTopicSelect.innerHTML = '<option value="">اختر الموضوع</option>';
+        
+        // Get accepted topics for current year
+        const snapshot = await database.ref(`topics/${currentYear}`).once('value');
+        const topics = snapshot.val() || {};
+        
+        Object.entries(topics).forEach(([id, topic]) => {
+            if (topic.status === 'accepted') {
+                const option = document.createElement('option');
+                option.value = id;
+                option.textContent = `${topic.title} (${topic.supervisor})`;
+                committeeTopicSelect.appendChild(option);
+            }
+        });
+        
+        // Populate discussant dropdowns
+        populateDiscussantDropdowns(window.discussants || {});
+        committeeModal.classList.remove('hidden');
+    } catch (error) {
+        console.error('Error populating committee form:', error);
+        alert('حدث خطأ أثناء تحميل البيانات');
+    } finally {
+        loadingSpinner.classList.add('hidden');
+    }
 }
 
 function populateDiscussantDropdowns(discussants) {
@@ -563,27 +744,114 @@ function populateDiscussantDropdowns(discussants) {
     secondDiscussantSelect.size = 5;
 }
 
-// Make functions available globally
+// Update Topic Status
 window.updateTopicStatus = async function(id, status) {
+    if (!confirm(`هل أنت متأكد من تغيير حالة الموضوع إلى ${status === 'accepted' ? 'مقبول' : 'مؤجل'}؟`)) return;
+    
     try {
+        loadingSpinner.classList.remove('hidden');
         await database.ref(`topics/${currentYear}/${id}/status`).set(status);
     } catch (error) {
         console.error('Error updating topic status:', error);
         alert('حدث خطأ أثناء التحديث');
+    } finally {
+        loadingSpinner.classList.add('hidden');
     }
 };
 
+// Change Topic Profile
 window.changeTopicProfile = async function(id) {
     const newProfile = prompt('اختر الملمح الجديد:\n1. متوسط\n2. ثانوي', 'متوسط');
     
     if (newProfile && ['متوسط', 'ثانوي'].includes(newProfile)) {
         try {
+            loadingSpinner.classList.remove('hidden');
             await database.ref(`topics/${currentYear}/${id}/profile`).set(newProfile);
         } catch (error) {
             console.error('Error changing topic profile:', error);
             alert('حدث خطأ أثناء التحديث');
+        } finally {
+            loadingSpinner.classList.add('hidden');
         }
     } else if (newProfile) {
         alert('الرجاء اختيار "متوسط" أو "ثانوي" فقط');
     }
 };
+
+// Event Listeners Setup
+function setupEventListeners() {
+    // Login/Logout
+    loginBtn.addEventListener('click', handleLogin);
+    logoutBtn.addEventListener('click', handleLogout);
+    passwordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleLogin();
+    });
+
+    // Year Navigation
+    yearNavButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentYear = btn.dataset.year;
+            currentYearTitle.textContent = `نظام إدارة مواضيع التخرج - ${currentYear}`;
+            loadDataForYear(currentYear);
+        });
+    });
+
+    // Page Navigation
+    subpageButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            subpageButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const page = btn.dataset.page;
+            topicsContent.classList.toggle('active', page === 'topics');
+            committeeContent.classList.toggle('active', page === 'committee');
+            
+            if (page === 'topics') {
+                renderTopics(window.currentTopics || {});
+            } else {
+                renderCommittees(window.currentCommittees || {});
+            }
+        });
+    });
+
+    // Topic Management
+    newTopicBtn.addEventListener('click', () => {
+        topicModal.classList.remove('hidden');
+        topicForm.reset();
+    });
+    
+    cancelModalBtn.addEventListener('click', () => {
+        topicModal.classList.add('hidden');
+        topicForm.reset();
+    });
+    
+    topicForm.addEventListener('submit', handleAddTopic);
+
+    // Committee Management
+    newCommitteeBtn.addEventListener('click', populateCommitteeForm);
+    
+    cancelCommitteeModalBtn.addEventListener('click', () => {
+        committeeModal.classList.add('hidden');
+        committeeForm.reset();
+    });
+    
+    committeeForm.addEventListener('submit', handleAddCommittee);
+
+    // Discussant Management
+    manageDiscussantsBtn.addEventListener('click', loadDiscussants);
+    
+    closeDiscussantsModalBtn.addEventListener('click', () => {
+        discussantsModal.classList.add('hidden');
+    });
+    
+    addDiscussantBtn.addEventListener('click', handleAddDiscussant);
+    
+    updateLimitBtn.addEventListener('click', handleUpdateDiscussantLimit);
+
+    // Excel Downloads
+    downloadExcelBtn.addEventListener('click', downloadTopicsExcel);
+    downloadCommitteeExcelBtn.addEventListener('click', downloadCommitteesExcel);
+}
+
+// Initialize with first year
+loadInitialData();
