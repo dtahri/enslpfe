@@ -10,9 +10,7 @@ apiKey: "AIzaSyCC36epRow_C0pILQdmHZQxW-Qvtu-1U2k",
 };
 
 // Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const auth = firebase.auth();
+
 
 firebase.auth().signInWithEmailAndPassword("d.tahri@lagh-univ.dz", "bio&19905")
   .then(user => console.log("Logged in:", user))
