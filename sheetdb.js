@@ -7,7 +7,7 @@ class SheetDB {
             topics: 'https://docs.google.com/spreadsheets/d/1-6xM4sGfzGv2UX0ovo_jHLf5RC1FOoitBeyHTjaZns0/edit?usp=sharing',
             committees: 'https://docs.google.com/spreadsheets/d/1_c33hENM9uRwGnfxnBc_0ol86vD5x1t3mFT-tlRjNpc/edit?usp=sharing',
             discussants: 'https://docs.google.com/spreadsheets/d/1RoV8gTJlMluZqKIpD9eWu1PidDE3v6bimZ_8_8nbqEo/edit?usp=sharing',
-            users: '1YOUR_USERS_SHEET_ID'
+            users: 'https://docs.google.com/spreadsheets/d/1Al1E0qpT3P2u_jDrUMKGrgSIH3Ar7-NL41EznbucQdM/edit?usp=sharing'
         },
         cache: {
             enabled: true,
