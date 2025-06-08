@@ -3,6 +3,11 @@ const supabaseUrl = 'https://nxiapowjelkojmhfkvpw.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54aWFwb3dqZWxrb2ptaGZrdnB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzMjg4MjAsImV4cCI6MjA2NDkwNDgyMH0.FXwcIBgxzV9OfHt5PLN2O9swVxKae6yjQYYlJx_yrKs';
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
+// Test connection immediately
+supabase.auth.getSession().then(({ data }) => {
+  console.log("Current session:", data.session);
+});
+
 // DOM Elements
 const loginPage = document.getElementById('login-page');
 const mainContent = document.getElementById('main-content');
@@ -57,31 +62,35 @@ const userCredentials = {
 
 // Login Function
 async function login() {
-    const password = passwordInput.value.trim();
-    const email = userCredentials[password];
-    
-    if (!email) {
-        loginError.textContent = 'كلمة المرور غير صحيحة';
-        return;
-    }
+  const password = passwordInput.value.trim();
+  const email = userCredentials[password];
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
-    });
+  if (!email) {
+    console.error("No email mapped for password:", password);
+    loginError.textContent = 'كلمة المرور غير صحيحة';
+    return;
+  }
 
-    if (error) {
-        loginError.textContent = 'فشل تسجيل الدخول: ' + error.message;
-    } else {
-        currentUser = password;
-        loginPage.classList.add('hidden');
-        mainContent.classList.remove('hidden');
-        loadSavedData();
-        loginError.textContent = '';
-        passwordInput.value = '';
-    }
+  console.log("Attempting login with:", { email, password });
+  
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+
+  console.log("Login response:", { data, error });
+
+  if (error) {
+    console.error("Login failed:", error.message);
+    loginError.textContent = 'فشل تسجيل الدخول: ' + error.message;
+  } else {
+    console.log("Login successful, user:", data.user);
+    currentUser = password;
+    loginPage.classList.add('hidden');
+    mainContent.classList.remove('hidden');
+    loadSavedData();
+  }
 }
-
 // Logout Function
 async function logout() {
     const { error } = await supabase.auth.signOut();
