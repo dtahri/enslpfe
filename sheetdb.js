@@ -4,9 +4,9 @@ class SheetDB {
     static config = {
         apiBase: 'https://opensheet.elk.sh',
         sheetIds: {
-            topics: '1YOUR_TOPICS_SHEET_ID',
-            committees: '1YOUR_COMMITTEES_SHEET_ID',
-            discussants: '1YOUR_DISCUSSANTS_SHEET_ID',
+            topics: 'https://docs.google.com/spreadsheets/d/1-6xM4sGfzGv2UX0ovo_jHLf5RC1FOoitBeyHTjaZns0/edit?usp=sharing',
+            committees: 'https://docs.google.com/spreadsheets/d/1_c33hENM9uRwGnfxnBc_0ol86vD5x1t3mFT-tlRjNpc/edit?usp=sharing',
+            discussants: 'https://docs.google.com/spreadsheets/d/1RoV8gTJlMluZqKIpD9eWu1PidDE3v6bimZ_8_8nbqEo/edit?usp=sharing',
             users: '1YOUR_USERS_SHEET_ID'
         },
         cache: {
