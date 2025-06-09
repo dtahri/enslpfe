@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة المواضيع</title>
+    <title>نظام إدارة مواضيع التخرج</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
 </head>
 <body>
     <!-- Login Page -->
@@ -15,6 +14,10 @@
         <p id="login-error" class="error-message"></p>
         <input type="password" id="password" placeholder="أدخل كلمة المرور">
         <button id="login-btn">دخول</button>
+        <div id="google-signin-btn" class="hidden">
+            <button id="authorize-btn" class="primary-btn">تسجيل الدخول بحساب Google</button>
+            <p id="google-signin-status"></p>
+        </div>
     </div>
 
     <!-- Main Content -->
