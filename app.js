@@ -2,8 +2,8 @@
 const SPREADSHEET_ID = '1wLbYMnruZFSDqxrzits0Ugz9fPkz3KYvingtHXALJt0'; // Replace with your Google Sheet ID
 const TOPICS_SHEET_NAME = 'Topics';
 const COMMITTEES_SHEET_NAME = 'Committees';
-const CLIENT_ID = 'YOUR_CLIENT_ID.apps.googleusercontent.com'; // Replace with your OAuth client ID
-const API_KEY = 'YOUR_API_KEY'; // Replace with your API key
+const CLIENT_ID = '671374463745-imd0ruvqrmvinsnuoip8ha76od9votkg.apps.googleusercontent.com'; // Replace with your OAuth client ID
+const API_KEY = 'AIzaSyC-NjeLo3lvd7tyX6FO3s5Qg3Xqbi5RpQI'; // Replace with your API key
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 
 // Initial Data
