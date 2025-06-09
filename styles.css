@@ -454,3 +454,52 @@ select[size]:not([multiple]) option:checked {
 .discussant-limit-container select {
     flex: 1;
 }
+
+/* Google Sign-in Button */
+#google-signin-btn {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-top: 1px solid #eee;
+}
+
+#authorize-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #4285F4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+#authorize-btn:hover {
+    background-color: #3367D6;
+}
+
+#google-signin-status {
+    margin-top: 0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Loading indicator */
+.loading {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(0,0,0,.1);
+    border-radius: 50%;
+    border-top-color: #3498db;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 0.5rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
