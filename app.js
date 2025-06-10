@@ -1,28 +1,37 @@
-// Modified save function for Topics
-async function saveTopicToSheet(topic) {
-  const scriptUrl = "YOUR_APPS_SCRIPT_URL";
+async function saveTopicToSheet(topicData) {
+  const scriptUrl = "https://script.google.com/macros/s/AKfycbx7KpuM1_UHo_zaL8JK5w7qGF933ACb0s5pI7kRYi1l4yFc0bBkJ6VlVJKa0_ErckT9xw/exec";
   
   try {
-    const response = await fetch(scriptUrl + "?sheet=Topics", {
+    const response = await fetch(scriptUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
-        action: "append",
-        data: [
-          topic.supervisor,
-          topic.title,
-          topic.profile,
-          topic.status || "pending",
-          topic.addedBy,
-          topic.year || "2025",
-          new Date().toISOString()
-        ]
+        data: {  // Wrapped in 'data' property for consistency
+          supervisor: topicData.supervisor,
+          title: topicData.title,
+          profile: topicData.profile,
+          status: "pending",
+          addedBy: currentUser,
+          year: currentYear
+        }
       })
     });
-    return await response.json();
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      console.log("Saved successfully:", result.message);
+      return true;
+    } else {
+      console.error("Save failed:", result.error);
+      return false;
+    }
+    
   } catch (error) {
-    console.error("Save error:", error);
-    return { success: false };
+    console.error("Network error:", error);
+    return false;
   }
 }
 
