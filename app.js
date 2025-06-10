@@ -1,5 +1,5 @@
 async function saveToSheet(topicData) {
-  const scriptUrl = "https://script.google.com/macros/s/AKfycbwf120zoHHib9smkBpksSHc7jHEruZigL1wVPgTE3Y3HgmFdoqYjqcBpPimpl59XiuA8A/exec"; // Paste your web app URL here
+  const scriptUrl = "https://script.google.com/macros/s/AKfycbyR77QOec5caGpzADpHicuCQ1VQOfRTX2DKLpF5he_8y9T16YQGLlKII2LPV5RAoSodHQ/exec"; // Paste your web app URL here
   
   try {
     const response = await fetch(scriptUrl, {
