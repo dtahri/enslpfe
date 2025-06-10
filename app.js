@@ -1,36 +1,43 @@
-async function saveToSheet(topicData) {
-  const scriptUrl = "https://script.google.com/macros/s/AKfycbyR77QOec5caGpzADpHicuCQ1VQOfRTX2DKLpF5he_8y9T16YQGLlKII2LPV5RAoSodHQ/exec"; // Paste your web app URL here
+// Modified save function for Topics
+async function saveTopicToSheet(topic) {
+  const scriptUrl = "YOUR_APPS_SCRIPT_URL";
   
   try {
-    const response = await fetch(scriptUrl, {
+    const response = await fetch(scriptUrl + "?sheet=Topics", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(topicData)
+      body: JSON.stringify({
+        action: "append",
+        data: [
+          topic.supervisor,
+          topic.title,
+          topic.profile,
+          topic.status || "pending",
+          topic.addedBy,
+          topic.year || "2025",
+          new Date().toISOString()
+        ]
+      })
     });
-    
-    if (await response.text() === "Success") {
-      console.log("Saved to sheet!");
-    }
+    return await response.json();
   } catch (error) {
-    console.error("Error saving:", error);
+    console.error("Save error:", error);
+    return { success: false };
   }
 }
 
-// Usage example:
-function submitTopicForm(e) {
-  e.preventDefault();
+// Modified Google Apps Script Code
+function doPost(e) {
+  const sheetName = e.parameter.sheet || "Topics";
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  const data = JSON.parse(e.postData.contents);
   
-  const topicData = {
-    supervisor: supervisorInput.value.trim(),
-    title: topicTitleInput.value.trim(),
-    profile: topicProfileSelect.value,
-    addedBy: currentUser,
-    year: currentYear
-  };
+  if (data.action === "append") {
+    sheet.appendRow(data.data);
+    return ContentService.createTextOutput(JSON.stringify({ success: true }));
+  }
   
-  saveToSheet(topicData);
-  topicModal.classList.add('hidden');
-  topicForm.reset();
+  return ContentService.createTextOutput(JSON.stringify({ success: false }));
 }
 
 // Initial Data
@@ -742,33 +749,41 @@ function updateDiscussantLimit() {
     openDiscussantsModal();
 }
 
-// Submit Topic Form
-function submitTopicForm(e) {
-    e.preventDefault();
+async function submitTopicForm(e) {
+  e.preventDefault();
+  
+  const topic = {
+    supervisor: supervisorInput.value.trim(),
+    title: topicTitleInput.value.trim(),
+    profile: topicProfileSelect.value,
+    addedBy: currentUser,
+    year: currentYear
+  };
+
+  // Validate
+  if (!topic.supervisor || !topic.title || !topic.profile) {
+    alert("الرجاء ملء جميع الحقول المطلوبة");
+    return;
+  }
+
+  // Save to sheet
+  const result = await saveTopicToSheet(topic);
+  
+  if (result.success) {
+    // Update local state
+    topics[currentYear].push({
+      ...topic,
+      status: "pending",
+      timestamp: new Date().toISOString()
+    });
     
-    const supervisor = supervisorInput.value.trim();
-    const title = topicTitleInput.value.trim();
-    const profile = topicProfileSelect.value;
-    
-    if (!supervisor || !title || !profile) {
-        alert('الرجاء ملء جميع الحقول المطلوبة');
-        return;
-    }
-    
-    const newTopic = {
-        supervisor,
-        title,
-        profile,
-        status: 'pending',
-        addedBy: currentUser,
-        timestamp: new Date().toISOString()
-    };
-    
-    topics[currentYear].push(newTopic);
-    saveTopicsToSheet();
+    // Close modal and reset
     topicModal.classList.add('hidden');
     topicForm.reset();
     renderTopics();
+  } else {
+    alert("خطأ في حفظ الموضوع، الرجاء المحاولة مرة أخرى");
+  }
 }
 
 // Submit Committee Form
