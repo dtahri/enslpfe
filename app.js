@@ -1,10 +1,37 @@
-// Google Sheets API Configuration
-const SPREADSHEET_ID = '1wLbYMnruZFSDqxrzits0Ugz9fPkz3KYvingtHXALJt0'; // Replace with your Google Sheet ID
-const TOPICS_SHEET_NAME = 'Topics';
-const COMMITTEES_SHEET_NAME = 'Committees';
-const CLIENT_ID = '671374463745-imd0ruvqrmvinsnuoip8ha76od9votkg.apps.googleusercontent.com'; // Replace with your OAuth client ID
-const API_KEY = 'AIzaSyC-NjeLo3lvd7tyX6FO3s5Qg3Xqbi5RpQI'; // Replace with your API key
-const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
+async function saveToSheet(topicData) {
+  const scriptUrl = "https://script.google.com/macros/s/AKfycbwf120zoHHib9smkBpksSHc7jHEruZigL1wVPgTE3Y3HgmFdoqYjqcBpPimpl59XiuA8A/exec"; // Paste your web app URL here
+  
+  try {
+    const response = await fetch(scriptUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(topicData)
+    });
+    
+    if (await response.text() === "Success") {
+      console.log("Saved to sheet!");
+    }
+  } catch (error) {
+    console.error("Error saving:", error);
+  }
+}
+
+// Usage example:
+function submitTopicForm(e) {
+  e.preventDefault();
+  
+  const topicData = {
+    supervisor: supervisorInput.value.trim(),
+    title: topicTitleInput.value.trim(),
+    profile: topicProfileSelect.value,
+    addedBy: currentUser,
+    year: currentYear
+  };
+  
+  saveToSheet(topicData);
+  topicModal.classList.add('hidden');
+  topicForm.reset();
+}
 
 // Initial Data
 const validPasswords = ['RgT2025EnSl', 'A3$dF', 'zX#7k', 'm9@Lp', 'Q2!vB', 'nT6$e', 'b$E2t', 'J7q#R', 'V!4sN', 'k@W5d'];
