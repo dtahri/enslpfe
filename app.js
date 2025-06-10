@@ -1,5 +1,5 @@
 async function saveTopicToSheet(topicData) {
-  const scriptUrl = "https://script.google.com/macros/s/AKfycbx7KpuM1_UHo_zaL8JK5w7qGF933ACb0s5pI7kRYi1l4yFc0bBkJ6VlVJKa0_ErckT9xw/exec";
+  const scriptUrl = "https://script.google.com/macros/s/AKfycbxjEK3fv10wCCsTiYfzcUI4WPHMWSStpElVTFCnNtGOlQA0zVCNIKDw7v9DQxvkxSD_-w/exec";
   
   try {
     const response = await fetch(scriptUrl, {
@@ -762,22 +762,40 @@ async function submitTopicForm(e) {
   }
 
   // Save to sheet
-  const result = await saveTopicToSheet(topic);
-  
-  if (result.success) {
-    // Update local state
-    topics[currentYear].push({
-      ...topic,
-      status: "pending",
-      timestamp: new Date().toISOString()
+async function saveTopicToSheet(topicData) {
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        data: { // Keep this structure consistent with your doPost
+          supervisor: topicData.supervisor,
+          title: topicData.title,
+          profile: topicData.profile,
+          status: "pending", // Default status
+          addedBy: currentUser,
+          year: currentYear
+        }
+      })
     });
+
+    const result = await response.text(); // Or response.json() if you change doPost return
+    console.log("Save result:", result);
     
-    // Close modal and reset
-    topicModal.classList.add('hidden');
-    topicForm.reset();
-    renderTopics();
-  } else {
-    alert("خطأ في حفظ الموضوع، الرجاء المحاولة مرة أخرى");
+    if (result === "Success") {
+      // Update local state if needed
+      topics[currentYear].push({
+        ...topicData,
+        status: "pending",
+        timestamp: new Date().toISOString()
+      });
+      return true;
+    }
+    return false;
+    
+  } catch (error) {
+    console.error("Save failed:", error);
+    return false;
   }
 }
 
