@@ -1,38 +1,36 @@
-async function saveTopicToSheet(topicData) {
-  const scriptUrl = "https://script.google.com/macros/s/AKfycbxjEK3fv10wCCsTiYfzcUI4WPHMWSStpElVTFCnNtGOlQA0zVCNIKDw7v9DQxvkxSD_-w/exec";
+async function saveToSheet(topicData) {
+  const scriptUrl = "https://script.google.com/macros/s/AKfycbxjEK3fv10wCCsTiYfzcUI4WPHMWSStpElVTFCnNtGOlQA0zVCNIKDw7v9DQxvkxSD_-w/exec"; // Paste your web app URL here
   
   try {
     const response = await fetch(scriptUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        data: {  // Wrapped in 'data' property for consistency
-          supervisor: topicData.supervisor,
-          title: topicData.title,
-          profile: topicData.profile,
-          status: "pending",
-          addedBy: currentUser,
-          year: currentYear
-        }
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(topicData)
     });
     
-    const result = await response.json();
-    
-    if (result.success) {
-      console.log("Saved successfully:", result.message);
-      return true;
-    } else {
-      console.error("Save failed:", result.error);
-      return false;
+    if (await response.text() === "Success") {
+      console.log("Saved to sheet!");
     }
-    
   } catch (error) {
-    console.error("Network error:", error);
-    return false;
+    console.error("Error saving:", error);
   }
+}
+
+// Usage example:
+function submitTopicForm(e) {
+  e.preventDefault();
+  
+  const topicData = {
+    supervisor: supervisorInput.value.trim(),
+    title: topicTitleInput.value.trim(),
+    profile: topicProfileSelect.value,
+    addedBy: currentUser,
+    year: currentYear
+  };
+  
+  saveToSheet(topicData);
+  topicModal.classList.add('hidden');
+  topicForm.reset();
 }
 
 // Initial Data
@@ -744,59 +742,33 @@ function updateDiscussantLimit() {
     openDiscussantsModal();
 }
 
-async function submitTopicForm(e) {
-  e.preventDefault();
-  
-  const topic = {
-    supervisor: supervisorInput.value.trim(),
-    title: topicTitleInput.value.trim(),
-    profile: topicProfileSelect.value,
-    addedBy: currentUser,
-    year: currentYear
-  };
-
-  // Validate
-  if (!topic.supervisor || !topic.title || !topic.profile) {
-    alert("الرجاء ملء جميع الحقول المطلوبة");
-    return;
-  }
-
-  // Save to sheet
-async function saveTopicToSheet(topicData) {
-  try {
-    const response = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        data: { // Keep this structure consistent with your doPost
-          supervisor: topicData.supervisor,
-          title: topicData.title,
-          profile: topicData.profile,
-          status: "pending", // Default status
-          addedBy: currentUser,
-          year: currentYear
-        }
-      })
-    });
-
-    const result = await response.text(); // Or response.json() if you change doPost return
-    console.log("Save result:", result);
+// Submit Topic Form
+function submitTopicForm(e) {
+    e.preventDefault();
     
-    if (result === "Success") {
-      // Update local state if needed
-      topics[currentYear].push({
-        ...topicData,
-        status: "pending",
-        timestamp: new Date().toISOString()
-      });
-      return true;
+    const supervisor = supervisorInput.value.trim();
+    const title = topicTitleInput.value.trim();
+    const profile = topicProfileSelect.value;
+    
+    if (!supervisor || !title || !profile) {
+        alert('الرجاء ملء جميع الحقول المطلوبة');
+        return;
     }
-    return false;
     
-  } catch (error) {
-    console.error("Save failed:", error);
-    return false;
-  }
+    const newTopic = {
+        supervisor,
+        title,
+        profile,
+        status: 'pending',
+        addedBy: currentUser,
+        timestamp: new Date().toISOString()
+    };
+    
+    topics[currentYear].push(newTopic);
+    saveTopicsToSheet();
+    topicModal.classList.add('hidden');
+    topicForm.reset();
+    renderTopics();
 }
 
 // Submit Committee Form
