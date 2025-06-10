@@ -35,20 +35,6 @@ async function saveTopicToSheet(topicData) {
   }
 }
 
-// Modified Google Apps Script Code
-function doPost(e) {
-  const sheetName = e.parameter.sheet || "Topics";
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  const data = JSON.parse(e.postData.contents);
-  
-  if (data.action === "append") {
-    sheet.appendRow(data.data);
-    return ContentService.createTextOutput(JSON.stringify({ success: true }));
-  }
-  
-  return ContentService.createTextOutput(JSON.stringify({ success: false }));
-}
-
 // Initial Data
 const validPasswords = ['RgT2025EnSl', 'A3$dF', 'zX#7k', 'm9@Lp', 'Q2!vB', 'nT6$e', 'b$E2t', 'J7q#R', 'V!4sN', 'k@W5d'];
 let currentUser = null;
